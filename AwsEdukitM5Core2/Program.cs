@@ -1,10 +1,13 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+// Latest known working interpreter = `1.8.0.30`
+// Perform updates using:
+// nanoff --target M5Core2 --update --serialport COM16
+
 using nanoFramework.M5Core2;
 using nanoFramework.M5Stack;
 using nanoFramework.Networking;
-//using nanoFramework.Runtime.Native;
 using System;
 using System.Diagnostics;
 using System.Threading;
