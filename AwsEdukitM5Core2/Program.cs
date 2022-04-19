@@ -33,17 +33,22 @@ if (!success)
 
 Debug.WriteLine("Network Setup complete.");
 Console.WriteLine("Network Setup complete.");
-Console.WriteLine("                                    ");
-Debug.WriteLine($"IP = {System.Net.NetworkInformation.IPGlobalProperties.GetIPAddress()}");
-Console.WriteLine($"IP = {System.Net.NetworkInformation.IPGlobalProperties.GetIPAddress()}");
-Debug.WriteLine($"RTC = {DateTime.UtcNow}");
-Console.WriteLine($"RTC = {DateTime.UtcNow}");
+AddStaticDisplayVariables();
 
-//var mpu = M5Core2.AccelerometerGyroscope;
+//var gyro = M5Core2.AccelerometerGyroscope;
+
 
 M5Core2.TouchEvent += TouchEventCallback;
 
 Thread.Sleep(Timeout.Infinite);
+
+void ButtonHapticFeedback()
+{
+    M5Core2.Vibrate = true;
+    Thread.Sleep(150);
+    M5Core2.Vibrate = false;
+}
+
 
 void TouchEventCallback(object sender, TouchEventArgs e)
 {
@@ -67,16 +72,19 @@ void TouchEventCallback(object sender, TouchEventArgs e)
 
     if ((e.TouchEventCategory & TouchEventCategory.LeftButton) == TouchEventCategory.LeftButton)
     {
+        ButtonHapticFeedback();
         Debug.WriteLine(StrLB);
         Console.WriteLine(StrLB);
     }
     else if ((e.TouchEventCategory & TouchEventCategory.MiddleButton) == TouchEventCategory.MiddleButton)
     {
+        ButtonHapticFeedback();
         Debug.WriteLine(StrMB);
         Console.WriteLine(StrMB);
     }
     else if ((e.TouchEventCategory & TouchEventCategory.RightButton) == TouchEventCategory.RightButton)
     {
+        ButtonHapticFeedback();
         Debug.WriteLine(StrRB);
         Console.WriteLine(StrRB);
     }
@@ -98,10 +106,16 @@ void TouchEventCallback(object sender, TouchEventArgs e)
         Debug.WriteLine(StrDoubleTouch);
         Console.Write(StrDoubleTouch);
     }
+    AddStaticDisplayVariables();
+}
 
-    Console.WriteLine("                                    ");
+void AddStaticDisplayVariables()
+{
+    Console.WriteLine("");
     Debug.WriteLine($"IP = {System.Net.NetworkInformation.IPGlobalProperties.GetIPAddress()}");
     Console.WriteLine($"IP = {System.Net.NetworkInformation.IPGlobalProperties.GetIPAddress()}");
     Debug.WriteLine($"RTC = {DateTime.UtcNow}");
     Console.WriteLine($"RTC = {DateTime.UtcNow}");
+    Debug.WriteLine($"CPU_T = {M5Core2.Power.GetInternalTemperature().DegreesCelsius}°C");
+    Console.WriteLine($"CPU_T = {M5Core2.Power.GetInternalTemperature().DegreesCelsius}_C");
 }
