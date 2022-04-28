@@ -1,7 +1,7 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-// Latest known working interpreter = `1.8.0.30`
+// Latest known working interpreter = `1.8.0.80`
 // Perform updates using:
 // nanoff --target M5Core2 --update --serialport COM16
 
@@ -34,9 +34,6 @@ if (!success)
 Debug.WriteLine("Network Setup complete.");
 Console.WriteLine("Network Setup complete.");
 AddStaticDisplayVariables();
-
-//var gyro = M5Core2.AccelerometerGyroscope;
-
 
 M5Core2.TouchEvent += TouchEventCallback;
 
@@ -118,4 +115,6 @@ void AddStaticDisplayVariables()
     Console.WriteLine($"RTC = {DateTime.UtcNow}");
     Debug.WriteLine($"CPU_T = {M5Core2.Power.GetInternalTemperature().DegreesCelsius}°C");
     Console.WriteLine($"CPU_T = {M5Core2.Power.GetInternalTemperature().DegreesCelsius}_C");
+    //Debug.WriteLine($"GYRO = {M5Core2.AccelerometerGyroscope.GetGyroscope()}");
+    //Console.WriteLine($"GYRO = {M5Core2.AccelerometerGyroscope.GetGyroscope()}");
 }
