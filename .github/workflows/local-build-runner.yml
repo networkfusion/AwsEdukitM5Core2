@@ -1,0 +1,51 @@
+# Copyright (c) NetworkFusion, .NET Foundation and Contributors
+# See LICENSE file in the project root for full license information.
+
+# This workflow will build push the sln to a hardware target.
+
+name: Build and push
+
+on: [push, pull_request]
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  build-solution:
+    name: Build nanoFramework solution
+    timeout-minutes: 15
+    runs-on: self-hosted
+    env:
+      solution: 'AwsEdukitM5Core2.sln'
+      buildPlatform: 'Any CPU'
+      buildConfiguration: 'Release'
+      GITHUB_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Install build components for nanoFramework
+        uses: nanoframework/nanobuild@v1
+
+      - name: Setup MSBuild Path
+        uses: microsoft/setup-msbuild@v1.1
+        with:
+          msbuild-architecture: x64
+
+      - name: Install NuGet client
+        uses: nuget/setup-nuget@v1
+        # with:
+        #   nuget-api-key: ${{ secrets.NUGET_API_KEY }}
+
+      - name: Restore nuget packages
+        run: nuget restore ${{ env.solution }} -ConfigFile NuGet.Config
+
+      - name: Build App
+        run: msbuild ${{ env.solution }} /p:Configuration=${{ env.buildConfiguration }}
+
+      # - name: Run unit tests
+      #   run: ./nanoFramework.nanoCLR.exe -load ...nanoFramework.UnitTestLauncher.pe --load ..mscorlib.pe --load ...nanoFramework.TestFramework.pe --load ...NFUnitTest.pe
