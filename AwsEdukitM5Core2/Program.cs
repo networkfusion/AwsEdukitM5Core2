@@ -1,7 +1,7 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-// Latest known working interpreter = `1.8.0.80`
+// Latest known working interpreter = `1.8.0.100`
 // Perform updates using:
 // nanoff --target M5Core2 --update --serialport COM16
 
@@ -20,14 +20,14 @@ Debug.WriteLine("Hello from M5Core2!");
 
 // Give 60 seconds to the wifi join to happen
 CancellationTokenSource cs = new(60000);
-var success = WiFiNetworkHelper.ConnectDhcp(WiFi.Ssid, WiFi.Password, requiresDateTime: true, token: cs.Token);
+var success = WifiNetworkHelper.ConnectDhcp(WiFi.Ssid, WiFi.Password, requiresDateTime: true, token: cs.Token);
 if (!success)
 {
     // Something went wrong, you can get details with the ConnectionError property:
-    Debug.WriteLine($"Can't connect to the network, error: {WiFiNetworkHelper.Status}");
-    if (WiFiNetworkHelper.HelperException != null)
+    Debug.WriteLine($"Can't connect to the network, error: {WifiNetworkHelper.Status}");
+    if (WifiNetworkHelper.HelperException != null)
     {
-        Debug.WriteLine($"ex: {WiFiNetworkHelper.HelperException}");
+        Debug.WriteLine($"ex: {WifiNetworkHelper.HelperException}");
     }
 }
 
