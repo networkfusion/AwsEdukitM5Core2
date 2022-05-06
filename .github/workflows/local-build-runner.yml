@@ -7,6 +7,10 @@ name: Build and push
 
 on: [push, pull_request]
 
+defaults:
+  run:
+    shell: pwsh
+    
 jobs:
   build-solution:
     name: Build nanoFramework solution
