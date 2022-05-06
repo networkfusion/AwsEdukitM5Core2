@@ -17,7 +17,7 @@ jobs:
     timeout-minutes: 15
     runs-on: self-hosted
     env:
-      solution: 'AWS-Edukit-M5Core2-Demo/AwsEdukitM5Core2.sln'
+      solution: 'AwsEdukitM5Core2.sln'
       buildPlatform: 'Any CPU'
       buildConfiguration: 'Release'
       GITHUB_TOKEN: ${{ github.token }}
