@@ -70,7 +70,6 @@ jobs:
       - name: Run tests
         uses: microsoft/vstest-action@v0.1.0
         with:
-          # testSelector: 'testAssemblies'
           testAssembly: |
             **\NFUnitTest.dll
             **\*Test*.dll
@@ -80,13 +79,17 @@ jobs:
             !**\nanoFramework.TestFramework\**
           searchFolder: ${{ github.workspace }}
           platform: ${{ env.BuildPlatform }}
-          vsTestVersion: toolsInstaller
+          # vsTestVersion: 'latest'
           codeCoverageEnabled: true
           runSettingsFile: './Tests/IntegrationTests/nano.runsettings'
 
-      # - name: Run unit tests
-      # adjust runsettings to run on real target
-      #   run: ./nanoFramework.nanoCLR.exe -load ...nanoFramework.UnitTestLauncher.pe --load ..mscorlib.pe --load ...nanoFramework.TestFramework.pe --load ...NFUnitTest.pe
+      - name: Convert Test Report
+        uses: dorny/test-reporter@v1
+        if: always()    # run this step even if previous step failed
+        with:
+          name: Test Results
+          path: ./**/TestResults/*.trx
+          reporter: 'dotnet-trx'
 
       # Self hosted runners need to cleanup after themselves. It is important as might have secrets!
       # TODO: this does not clean it up properly!
