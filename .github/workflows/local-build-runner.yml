@@ -67,6 +67,23 @@ jobs:
       - name: Build solution
         run: msbuild ${{ env.solution }} /p:Configuration=${{ env.buildConfiguration }}
 
+      - name: Run tests
+        uses: microsoft-approved-actions/vstest@master
+        with:
+          testSelector: 'testAssemblies'
+          testAssembly: |
+            **\NFUnitTest.dll
+            **\*Test*.dll
+            !**\obj\**
+            !**\TestAdapter\**
+            !**\NFUnitTest_DummyAdapter\**
+            !**\nanoFramework.TestFramework\**
+          searchFolder: ${{ github.workspace }}
+          platform: ${{ env.BuildPlatform }}
+          vsTestVersion: toolsInstaller
+          codeCoverageEnabled: true
+          runSettingsFile: '${{ parameters.unitTestRunsettings }}'
+
       # - name: Run unit tests
       # adjust runsettings to run on real target
       #   run: ./nanoFramework.nanoCLR.exe -load ...nanoFramework.UnitTestLauncher.pe --load ..mscorlib.pe --load ...nanoFramework.TestFramework.pe --load ...NFUnitTest.pe
