@@ -44,7 +44,7 @@ jobs:
 
       # Adjust secrets template to add SSID and PW (TODO: in future should be able to load from a template)
       - name: Use Secrets class template for tests
-        run: Copy-Item "./AwsEdukitM5Core2/Secrets.cs.template" -Destination "./AwsEdukitM5Core2/Secrets.cs"
+        run: Copy-Item './AwsEdukitM5Core2/Secrets.cs.template' -Destination './AwsEdukitM5Core2/Secrets.cs'
 
       - name: Build App
         run: msbuild ${{ env.solution }} /p:Configuration=${{ env.buildConfiguration }}

@@ -45,9 +45,12 @@ jobs:
 
       # Adjust secrets template to add SSID and PW (TODO: in future should be able to load from a template)
       - name: Use Secrets class template for tests
-        run: Copy-Item "./AwsEdukitM5Core2/Secrets.cs.template" -Destination "./AwsEdukitM5Core2/Secrets.cs"
+        run: Copy-Item './AwsEdukitM5Core2/Secrets.cs.template' -Destination './AwsEdukitM5Core2/Secrets.cs'
 
-
+      # Adjust run settings for tests to run on real hardware.
+      # - name: Adjust tests for targeting real hardware devices
+      #   run: (Get-Content ./Tests/IntegrationTests/nano.runsettings -Raw) -Replace '<IsRealHardware>False</IsRealHardware>', '<IsRealHardware>True</IsRealHardware>' | Set-Content ./Tests/IntegrationTests/nano.runsettings
+      
       - name: Build solution
         run: msbuild ${{ env.solution }} /p:Configuration=${{ env.buildConfiguration }}
 
@@ -56,6 +59,7 @@ jobs:
       #   run: ./nanoFramework.nanoCLR.exe -load ...nanoFramework.UnitTestLauncher.pe --load ..mscorlib.pe --load ...nanoFramework.TestFramework.pe --load ...NFUnitTest.pe
 
       # Self hosted runners need to cleanup after themselves. It is important as might have secrets!
+      # TODO: this does not clean it up properly!
       - name: Cleanup Runner workspace path
         run: |
-          Remove-Item –path ${{ github.workspace }}/* –Recurse
+          Remove-Item -path ${{ github.workspace }}/* -Recurse
