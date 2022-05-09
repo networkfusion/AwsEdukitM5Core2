@@ -26,7 +26,7 @@ jobs:
       # TODO: should probably be moved to the end of the run, but useful here for debugging
       - name: Cleanup Runner workspace path
         run: |
-          Remove-Item –path ${{ github.workspace }} * –Recurse
+          Remove-Item –path ${{ github.workspace }}/* –Recurse
 
       - name: Checkout
         uses: actions/checkout@v2
