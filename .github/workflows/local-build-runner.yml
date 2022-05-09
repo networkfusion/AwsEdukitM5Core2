@@ -23,17 +23,13 @@ jobs:
       GITHUB_TOKEN: ${{ github.token }}
 
     steps:
-      # TODO: should probably be moved to the end of the run, but useful here for debugging
-      - name: Cleanup Runner workspace path
-        run: |
-          Remove-Item –path ${{ github.workspace }}/* –Recurse
-
       - name: Checkout
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
 
-      # - name: Install build components for nanoFramework (not required on selfhost as already installed).
+      # not required on selfhost as already installed (and action cannot handle it).
+      # - name: Install build components for nanoFramework
       #   uses: nanoframework/nanobuild@v1
 
       - name: Setup MSBuild Path
@@ -52,9 +48,14 @@ jobs:
         run: Copy-Item "./AwsEdukitM5Core2/Secrets.cs.template" -Destination "./AwsEdukitM5Core2/Secrets.cs"
 
 
-      - name: Build App
+      - name: Build solution
         run: msbuild ${{ env.solution }} /p:Configuration=${{ env.buildConfiguration }}
 
       # - name: Run unit tests
       # adjust runsettings to run on real target
       #   run: ./nanoFramework.nanoCLR.exe -load ...nanoFramework.UnitTestLauncher.pe --load ..mscorlib.pe --load ...nanoFramework.TestFramework.pe --load ...NFUnitTest.pe
+
+      # Self hosted runners need to cleanup after themselves. It is important as might have secrets!
+      - name: Cleanup Runner workspace path
+        run: |
+          Remove-Item –path ${{ github.workspace }}/* –Recurse
