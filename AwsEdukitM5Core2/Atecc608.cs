@@ -64,6 +64,7 @@ namespace AwsEdukitM5Core2
             //var device = new I2cDevice();
             // defaultAddress = 0x35,
             // defaultBusId = 1
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -72,7 +73,8 @@ namespace AwsEdukitM5Core2
         /// <returns></returns>
         public static int Read()
         {
-            return 0;
+            throw new NotImplementedException();
+            //return 0;
         }
 
 
@@ -87,7 +89,7 @@ namespace AwsEdukitM5Core2
         /// <param name="length"></param>
         public static void Write(short slot, int offset, char[] data, int length)
         {
-
+            throw new NotImplementedException();
         }
     }
 }
