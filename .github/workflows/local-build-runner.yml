@@ -28,7 +28,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      # - name: Install build components for nanoFramework
+      # - name: Install build components for nanoFramework (not required on selfhost as already installed).
       #   uses: nanoframework/nanobuild@v1
 
       - name: Setup MSBuild Path
@@ -44,8 +44,11 @@ jobs:
       - name: Restore nuget packages
         run: nuget restore ${{ env.solution }} -ConfigFile NuGet.Config
 
+      # Adjust secrets template to add SSID and PW?
+
       - name: Build App
         run: msbuild ${{ env.solution }} /p:Configuration=${{ env.buildConfiguration }}
 
       # - name: Run unit tests
+      # adjust runsettings to run on real target
       #   run: ./nanoFramework.nanoCLR.exe -load ...nanoFramework.UnitTestLauncher.pe --load ..mscorlib.pe --load ...nanoFramework.TestFramework.pe --load ...NFUnitTest.pe
