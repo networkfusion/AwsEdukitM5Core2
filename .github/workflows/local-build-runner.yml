@@ -23,6 +23,11 @@ jobs:
       GITHUB_TOKEN: ${{ github.token }}
 
     steps:
+      # TODO: should probably be moved to the end of the run, but useful here for debugging
+      - name: Cleanup Runner workspace path
+        run: |
+          Remove-Item '${{ github.workspace }}' -Recurse
+
       - name: Checkout
         uses: actions/checkout@v2
         with:
@@ -38,13 +43,14 @@ jobs:
 
       - name: Install NuGet client
         uses: nuget/setup-nuget@v1
-        # with:
-        #   nuget-api-key: ${{ secrets.NUGET_API_KEY }}
 
       - name: Restore nuget packages
         run: nuget restore ${{ env.solution }} -ConfigFile NuGet.Config
 
-      # Adjust secrets template to add SSID and PW?
+      # Adjust secrets template to add SSID and PW (TODO: in future should be able to load from a template)
+      - name: Use Secrets class template for tests
+        run: Copy-Item "./AwsEdukitM5Core2/Secrets.cs.template" -Destination "./AwsEdukitM5Core2/Secrets.cs"
+
 
       - name: Build App
         run: msbuild ${{ env.solution }} /p:Configuration=${{ env.buildConfiguration }}
