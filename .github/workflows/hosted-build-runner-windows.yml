@@ -3,7 +3,7 @@
 
 # This workflow will build push the sln to a hardware target.
 
-name: Build and push
+name: hosted-windows build test
 
 on: [push, pull_request]
 
