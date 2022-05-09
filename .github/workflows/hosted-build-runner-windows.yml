@@ -66,7 +66,7 @@ jobs:
           # diagnosticsEnabled: true
           vsTestVersion: toolsInstaller
           codeCoverageEnabled: true
-          runSettingsFile: '${{ parameters.unitTestRunsettings }}'
+          runSettingsFile: './Tests/IntegrationTests/nano.runsettings'
 
       # - name: Run unit tests
       # adjust runsettings to run on real target
