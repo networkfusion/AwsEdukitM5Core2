@@ -27,6 +27,8 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
+      - name: Run git init
+        run: git init # required for dorny/test-reporter! TODO: find a better way!
 
       # TODO: should check nanoff is installed?
       # - name: check nanoff is up-to-date

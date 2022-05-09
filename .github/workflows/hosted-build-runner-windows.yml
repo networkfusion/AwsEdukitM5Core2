@@ -27,6 +27,8 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
+      - name: Run git init
+        run: git init # required for dorny/test-reporter! TODO: find a better way!
 
       - name: Install build components for nanoFramework
         uses: nanoframework/nanobuild@v1
