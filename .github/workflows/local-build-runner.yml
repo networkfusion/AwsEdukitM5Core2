@@ -68,7 +68,7 @@ jobs:
         run: msbuild ${{ env.solution }} /p:Configuration=${{ env.buildConfiguration }}
 
       - name: Run tests
-        uses: microsoft-approved-actions/vstest@master
+        uses: microsoft/vstest-action@v0.1.0
         with:
           testSelector: 'testAssemblies'
           testAssembly: |
