@@ -70,7 +70,7 @@ jobs:
       - name: Run tests
         uses: microsoft/vstest-action@v0.1.0
         with:
-          testSelector: 'testAssemblies'
+          # testSelector: 'testAssemblies'
           testAssembly: |
             **\NFUnitTest.dll
             **\*Test*.dll
