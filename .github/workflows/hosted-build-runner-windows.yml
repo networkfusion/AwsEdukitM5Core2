@@ -63,7 +63,7 @@ jobs:
           searchFolder: ${{ github.workspace }}
           platform: ${{ env.BuildPlatform }}
           # vsTestVersion: 'latest'
-          codeCoverageEnabled: true
+          codeCoverageEnabled: false
           runSettingsFile: './Tests/IntegrationTests/nano.runsettings'
 
       - name: Convert Test Report
