@@ -3,7 +3,7 @@
 
 // Latest known working interpreter = `1.8.0.100`
 // Perform updates using:
-// nanoff --target M5Core2 --update --serialport COM16
+// nanoff --masserase --target M5Core2 --update --serialport COM16
 
 using nanoFramework.M5Core2;
 using nanoFramework.M5Stack;
@@ -113,7 +113,7 @@ void AddStaticDisplayVariables()
     Console.WriteLine($"IP = {System.Net.NetworkInformation.IPGlobalProperties.GetIPAddress()}");
     Debug.WriteLine($"RTC = {DateTime.UtcNow}");
     Console.WriteLine($"RTC = {DateTime.UtcNow}");
-    Debug.WriteLine($"CPU_T = {M5Core2.Power.GetInternalTemperature().DegreesCelsius}°C");
+    Debug.WriteLine($"CPU_T = {M5Core2.Power.GetInternalTemperature().DegreesCelsius}ï¿½C");
     Console.WriteLine($"CPU_T = {M5Core2.Power.GetInternalTemperature().DegreesCelsius}_C");
     //Debug.WriteLine($"GYRO = {M5Core2.AccelerometerGyroscope.GetGyroscope()}");
     //Console.WriteLine($"GYRO = {M5Core2.AccelerometerGyroscope.GetGyroscope()}");

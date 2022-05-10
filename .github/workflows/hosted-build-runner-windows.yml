@@ -1,7 +1,7 @@
 # Copyright (c) NetworkFusion, .NET Foundation and Contributors
 # See LICENSE file in the project root for full license information.
 
-# This workflow will build push the sln to a hardware target.
+# This workflow will build and test the sln without a hardware target.
 
 name: hosted-windows build test
 
@@ -43,7 +43,7 @@ jobs:
       - name: Restore nuget packages
         run: nuget restore ${{ env.solution }} -ConfigFile NuGet.Config
 
-      # Adjust secrets template to add SSID and PW (TODO: in future should be able to load from a template)
+      # Adjust secrets to add SSID and PW using defaults from the template (as doesnt need real ones)
       - name: Use Secrets class template for tests
         run: Copy-Item './AwsEdukitM5Core2/Secrets.cs.template' -Destination './AwsEdukitM5Core2/Secrets.cs'
 
@@ -52,6 +52,7 @@ jobs:
 
       - name: Run tests
         uses: microsoft/vstest-action@v0.1.0
+        if: always()
         with:
           testAssembly: |
             **\NFUnitTest.dll
@@ -63,11 +64,11 @@ jobs:
           searchFolder: ${{ github.workspace }}
           platform: ${{ env.BuildPlatform }}
           # vsTestVersion: 'latest'
-          codeCoverageEnabled: false
+          codeCoverageEnabled: false # TODO: using this will throw an exception...
           runSettingsFile: './Tests/IntegrationTests/nano.runsettings'
 
       - name: Convert Test Report
-        uses: dorny/test-reporter@v1
+        uses: dorny/test-reporter@v1 # need to find a better action as a bit stale!
         if: always()    # run this step even if previous step failed
         with:
           name: Test Results

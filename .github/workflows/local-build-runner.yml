@@ -33,7 +33,8 @@ jobs:
       #   run: dotnet tool update -g nanoff
 
       # - name: Check target board is connected
-      #   run: nanoff - listtargets
+      #   run: |
+      #     nanoff --devicedetails --serialport xx # Foreach serialport? https://stackoverflow.com/questions/58548948/find-active-serial-ports-in-windows-subsystem-for-linux-wsl
       
       # TODO: not sure if this is sufficient as can suffer from reset (or locked port) issues
       # - name: Update target board
@@ -70,6 +71,7 @@ jobs:
 
       - name: Run tests
         uses: microsoft/vstest-action@v0.1.0
+        if: always()
         with:
           testAssembly: |
             **\NFUnitTest.dll
@@ -81,7 +83,7 @@ jobs:
           searchFolder: ${{ github.workspace }}
           platform: ${{ env.BuildPlatform }}
           # vsTestVersion: 'latest'
-          codeCoverageEnabled: false
+          codeCoverageEnabled: false # TODO: using this will throw an exception...
           runSettingsFile: './Tests/IntegrationTests/nano.runsettings'
 
       # - name: Convert Test Report # TODO: requires a bash environment due to `git` command.
