@@ -13,18 +13,21 @@ namespace IntegrationTests
             // Adjust your SSID and password in the constants
             // currently fails with exception if the following is uncommented.
             //Assert.SkipTest("Skipping setup as needs secret");
+            Assert.True(true);
         }
 
         [TestMethod]
         public void DeployedOnRealTarget()
         {
             //Assert.SkipTest("Skipping test as needs checking");
+            Assert.True(true);
         }
 
         [TestMethod]
         public void CheckNugetsWork()
         {
             //Assert.SkipTest("Skipping test as needs checking");
+            Assert.True(true);
         }
 
         [TestMethod]
@@ -32,7 +35,6 @@ namespace IntegrationTests
         {
             //testing what happens in CI.
             Assert.True(true);
-            // Currently nothing is o/p to folder TestResults!!!
         }
     }
 }
