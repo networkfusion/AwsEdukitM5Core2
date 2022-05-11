@@ -29,8 +29,8 @@ jobs:
           fetch-depth: 0
 
       # TODO: should check nanoff is installed?
-      - name: check nanoff is up-to-date
-        run: dotnet tool update -g nanoff
+      # - name: check nanoff is up-to-date
+      #   run: dotnet tool update -g nanoff
 
       # - name: Check target board is connected
       #   run: |
