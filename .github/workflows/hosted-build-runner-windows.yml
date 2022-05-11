@@ -68,7 +68,7 @@ jobs:
           runSettingsFile: './Tests/IntegrationTests/nano.runsettings'
 
       - name: Convert Test Report
-        uses: dorny/test-reporter@v1 # need to find a better action as a bit stale!
+        uses: phoenix-actions/test-reporting@v6 # need to find a better action as a bit unstable.
         if: always()    # run this step even if previous step failed
         with:
           name: Test Results
