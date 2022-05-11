@@ -86,14 +86,14 @@ jobs:
           codeCoverageEnabled: false # TODO: using this will throw an exception...
           runSettingsFile: './Tests/IntegrationTests/nano.runsettings'
 
-      # - name: Convert Test Report # TODO: requires a bash environment due to `git` command.
-      #   uses: dorny/test-reporter@v1
-      #   if: always()    # run this step even if previous step failed
-      #   with:
-      #     name: Test Results
-      #     path: ./**/TestResults/*.trx
-      #     reporter: 'dotnet-trx'
-      #     fail-on-error: false
+      - name: Convert Test Report # TODO: requires a bash environment due to `git` command.
+        uses: dorny/test-reporter@v1
+        if: always()    # run this step even if previous step failed
+        with:
+          name: Test Results
+          path: ./**/TestResults/*.trx
+          reporter: 'dotnet-trx'
+          fail-on-error: false
 
       # Self hosted runners need to cleanup after themselves. It is important as might have secrets!
       # TODO: this does not clean it up properly!
