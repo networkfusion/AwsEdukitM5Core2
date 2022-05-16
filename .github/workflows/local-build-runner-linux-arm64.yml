@@ -67,7 +67,8 @@ jobs:
       #   run: (Get-Content ./Tests/IntegrationTests/nano.runsettings -Raw) -Replace '<IsRealHardware>False</IsRealHardware>', '<IsRealHardware>True</IsRealHardware>' | Set-Content ./Tests/IntegrationTests/nano.runsettings
       
       - name: Build solution
-        run: msbuild ${{ env.solution }} /t:restore /p:Configuration=${{ env.buildConfiguration }}
+        # on mono it is xbuild (rather than msbuld)!
+        run: xbuild ${{ env.solution }} /t:restore /p:Configuration=${{ env.buildConfiguration }}
 
       # - name: Run tests
       #   uses: microsoft/vstest-action@v0.1.0
