@@ -55,8 +55,8 @@ jobs:
       # - name: Install NuGet client
       #   uses: nuget/setup-nuget@v1
 
-      - name: Restore nuget packages
-        run: nuget restore ${{ env.solution }} -ConfigFile NuGet.Config
+      # - name: Restore nuget packages
+      #   run: nuget restore ${{ env.solution }} -ConfigFile NuGet.Config
 
       # Adjust secrets template to add SSID and PW (TODO: in future should be able to load from a template)
       - name: Use Secrets class template for tests
@@ -67,7 +67,7 @@ jobs:
       #   run: (Get-Content ./Tests/IntegrationTests/nano.runsettings -Raw) -Replace '<IsRealHardware>False</IsRealHardware>', '<IsRealHardware>True</IsRealHardware>' | Set-Content ./Tests/IntegrationTests/nano.runsettings
       
       - name: Build solution
-        run: msbuild ${{ env.solution }} /p:Configuration=${{ env.buildConfiguration }}
+        run: msbuild ${{ env.solution }} /t:restore /p:Configuration=${{ env.buildConfiguration }}
 
       # - name: Run tests
       #   uses: microsoft/vstest-action@v0.1.0
