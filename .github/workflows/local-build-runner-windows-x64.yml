@@ -1,0 +1,102 @@
+# Copyright (c) NetworkFusion, .NET Foundation and Contributors
+# See LICENSE file in the project root for full license information.
+
+# This workflow will build push the sln to a hardware target.
+
+name: self-hosted-windows build and test
+
+on: [push, pull_request]
+
+defaults:
+  run:
+    shell: pwsh
+    
+jobs:
+  build-solution:
+    name: Build nanoFramework solution
+    timeout-minutes: 15
+    runs-on: [self-hosted, Windows, X64] #TODO: needs other "labels" to ensure pre-requisites
+    env:
+      solution: 'AwsEdukitM5Core2.sln'
+      buildPlatform: 'Any CPU'
+      buildConfiguration: 'Release'
+      GITHUB_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      # TODO: should check nanoff is installed?
+      # - name: check nanoff is up-to-date
+      #   run: dotnet tool update -g nanoff
+
+      # - name: Check target board is connected
+      #   run: |
+      #     nanoff --devicedetails --serialport xx # Foreach serialport? https://stackoverflow.com/questions/58548948/find-active-serial-ports-in-windows-subsystem-for-linux-wsl
+      
+      # TODO: not sure if this is sufficient as can suffer from reset (or locked port) issues
+      # - name: Update target board
+      #   run: nanoff --masserase --target M5Core2 --update --serialport COM16
+
+
+
+      # not required on selfhost as already installed (and action cannot handle it).
+      # - name: Install build components for nanoFramework
+      #   uses: nanoframework/nanobuild@v1
+
+      - name: Setup MSBuild Path
+        uses: microsoft/setup-msbuild@v1.1
+        with:
+          msbuild-architecture: x64
+          vs-version: 17.0
+
+      - name: Install NuGet client
+        uses: nuget/setup-nuget@v1
+
+      - name: Restore nuget packages
+        run: nuget restore ${{ env.solution }} -ConfigFile NuGet.Config
+
+      # Adjust secrets template to add SSID and PW (TODO: in future should be able to load from a template)
+      - name: Use Secrets class template for tests
+        run: Copy-Item './AwsEdukitM5Core2/Secrets.cs.template' -Destination './AwsEdukitM5Core2/Secrets.cs'
+
+      # Adjust run settings for tests to run on real hardware.
+      # - name: Adjust tests for targeting real hardware devices
+      #   run: (Get-Content ./Tests/IntegrationTests/nano.runsettings -Raw) -Replace '<IsRealHardware>False</IsRealHardware>', '<IsRealHardware>True</IsRealHardware>' | Set-Content ./Tests/IntegrationTests/nano.runsettings
+      
+      - name: Build solution
+        run: msbuild ${{ env.solution }} /p:Configuration=${{ env.buildConfiguration }}
+
+      - name: Run tests
+        uses: microsoft/vstest-action@v0.1.0
+        if: always()
+        with:
+          testAssembly: |
+            **\NFUnitTest.dll
+            **\*Test*.dll
+            !**\obj\**
+            !**\TestAdapter\**
+            !**\NFUnitTest_DummyAdapter\**
+            !**\nanoFramework.TestFramework\**
+          searchFolder: ${{ github.workspace }}
+          platform: ${{ env.BuildPlatform }}
+          # vsTestVersion: 'latest'
+          codeCoverageEnabled: false # TODO: using this will throw an exception...
+          runSettingsFile: './Tests/IntegrationTests/nano.runsettings'
+
+      - name: Convert Test Report # TODO: requires a bash environment due to `git` command.
+        uses: phoenix-actions/test-reporting@v6  # need to find a better action as a bit unstable.
+        if: always()    # run this step even if previous step failed
+        with:
+          name: Test Results
+          path: ./**/TestResults/*.trx
+          reporter: 'dotnet-trx'
+          fail-on-error: false
+
+      # Self hosted runners need to cleanup after themselves. It is important as might have secrets!
+      # TODO: this does not clean it up properly!
+      - name: Cleanup Runner workspace path
+        run: |
+          Remove-Item -path ${{ github.workspace }}/* -Recurse

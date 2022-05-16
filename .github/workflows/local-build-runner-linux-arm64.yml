@@ -15,7 +15,7 @@ jobs:
   build-solution:
     name: Build nanoFramework solution
     timeout-minutes: 15
-    runs-on: self-hosted #TODO: needs other "labels" to ensure pre-requisites
+    runs-on: [self-hosted, linux, ARM64] #TODO: needs other "labels" to ensure pre-requisites
     env:
       solution: 'AwsEdukitM5Core2.sln'
       buildPlatform: 'Any CPU'
