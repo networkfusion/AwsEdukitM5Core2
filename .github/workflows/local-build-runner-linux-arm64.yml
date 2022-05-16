@@ -55,8 +55,8 @@ jobs:
       # - name: Install NuGet client
       #   uses: nuget/setup-nuget@v1
 
-      # - name: Restore nuget packages
-      #   run: nuget restore ${{ env.solution }} -ConfigFile NuGet.Config
+      - name: Restore nuget packages
+        run: nuget restore ${{ env.solution }} -ConfigFile NuGet.Config
 
       # Adjust secrets template to add SSID and PW (TODO: in future should be able to load from a template)
       - name: Use Secrets class template for tests
@@ -68,7 +68,7 @@ jobs:
       
       - name: Build solution
         # on mono it is xbuild (rather than msbuld)!
-        run: xbuild ${{ env.solution }} /t:restore /p:Configuration=${{ env.buildConfiguration }}
+        run: xbuild ${{ env.solution }} /p:Configuration=${{ env.buildConfiguration }}
 
       # - name: Run tests
       #   uses: microsoft/vstest-action@v0.1.0
