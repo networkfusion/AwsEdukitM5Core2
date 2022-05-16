@@ -68,7 +68,7 @@ jobs:
       
       - name: Build solution
         # on mono it is xbuild (rather than msbuld)!
-        run: msbuild ${{ env.solution }} /t:restore /p:Configuration=${{ env.buildConfiguration }}
+        run: xbuild ${{ env.solution }} /t:restore /p:Configuration=${{ env.buildConfiguration }}
 
       # - name: Run tests
       #   uses: microsoft/vstest-action@v0.1.0
