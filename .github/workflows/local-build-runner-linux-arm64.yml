@@ -28,6 +28,14 @@ jobs:
         with:
           fetch-depth: 0
 
+
+      - name: runner checks
+        run -|
+          pwsh
+          exit
+          nuget
+          msbuild
+
       # TODO: should check nanoff is installed?
       # - name: check nanoff is up-to-date
       #   run: dotnet tool update -g nanoff
@@ -46,16 +54,6 @@ jobs:
       # - name: Install build components for nanoFramework
       #   uses: nanoframework/nanobuild@v1
 
-      # Note that this would involve using mono-complete, so maybe we should just check it is available.
-      # - name: Setup MSBuild Path
-      #   uses: microsoft/setup-msbuild@v1.1
-      #   with:
-      #     msbuild-architecture: x64
-      #     vs-version: 17.0
-
-      # Note that this would likely require an apt command, so we should just check the command is available...
-      # - name: Install NuGet client
-      #   uses: nuget/setup-nuget@v1
 
       - name: Restore nuget packages
         run: nuget restore ${{ env.solution }} -ConfigFile NuGet.Config
@@ -74,7 +72,7 @@ jobs:
         # Check if https://raw.githubusercontent.com/networkfusion/nf-VSCodeExtension/networkfusion-test-vs2022/scripts/build.ps1 can help!
         # As a test, it was downloaded directly and using the static system path!
         # and exclude the buld config: /p:Configuration=${{ env.buildConfiguration }}
-        run: msbuild ${{ env.solution }} /p:NanoFrameworkProjectSystemPath=/home/pi/nfExtension/nanoFramework.Tools.VS2022.Extension/$MSBuild/nanoFramework/v1.0/
+        run: msbuild ${{ env.solution }} /p:NanoFrameworkProjectSystemPath=~/nfExtension/nanoFramework.Tools.VS2022.Extension/$MSBuild/nanoFramework/v1.0/
 
       # - name: Run tests
       #   uses: microsoft/vstest-action@v0.1.0
