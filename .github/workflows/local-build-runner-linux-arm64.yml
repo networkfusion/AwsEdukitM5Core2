@@ -46,12 +46,14 @@ jobs:
       # - name: Install build components for nanoFramework
       #   uses: nanoframework/nanobuild@v1
 
+      # Note that this would involve using mono-complete, so maybe we should just check it is available.
       # - name: Setup MSBuild Path
       #   uses: microsoft/setup-msbuild@v1.1
       #   with:
       #     msbuild-architecture: x64
       #     vs-version: 17.0
 
+      # Note that this would likely require an apt command, so we should just check the command is available...
       # - name: Install NuGet client
       #   uses: nuget/setup-nuget@v1
 
@@ -65,10 +67,13 @@ jobs:
       # Adjust run settings for tests to run on real hardware.
       # - name: Adjust tests for targeting real hardware devices
       #   run: (Get-Content ./Tests/IntegrationTests/nano.runsettings -Raw) -Replace '<IsRealHardware>False</IsRealHardware>', '<IsRealHardware>True</IsRealHardware>' | Set-Content ./Tests/IntegrationTests/nano.runsettings
-      
+    
+
       - name: Build solution
-        # on mono it is xbuild (rather than msbuld)!
-        run: msbuild ${{ env.solution }} /p:Configuration=${{ env.buildConfiguration }}
+        # TODO: We will need to install (or make sure) an arch compatible nf sdk extension (with path for `NanoFrameworkProjectSystemPath`) before this will work!
+        # Check if https://raw.githubusercontent.com/networkfusion/nf-VSCodeExtension/networkfusion-test-vs2022/scripts/build.ps1 can help!
+        # As a test, it was downloaded directly and using the static system path!
+        run: msbuild ${{ env.solution }} /p:NanoFrameworkProjectSystemPath=/home/pi/nfExtension/nanoFramework.Tools.VS2022.Extension/$MSBuild/nanoFramework/v1.0/ /p:Configuration=${{ env.buildConfiguration }}
 
       # - name: Run tests
       #   uses: microsoft/vstest-action@v0.1.0
