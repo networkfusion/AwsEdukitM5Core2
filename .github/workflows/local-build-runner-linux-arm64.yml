@@ -30,7 +30,7 @@ jobs:
 
 
       - name: runner checks
-        run -|
+        run: |
           pwsh
           exit
           nuget
