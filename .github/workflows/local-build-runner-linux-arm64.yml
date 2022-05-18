@@ -29,12 +29,12 @@ jobs:
           fetch-depth: 0
 
 
-      # - name: runner checks
-      #   run: |
-      #     pwsh
-      #     exit
-      #     nuget
-      #     msbuild
+      - name: runner checks (to ensure commands are available)
+        run: |
+          ./pwsh
+          exit
+          ./nuget
+          ./msbuild
 
       # TODO: should check nanoff is installed?
       # - name: check nanoff is up-to-date
@@ -68,7 +68,7 @@ jobs:
     
 
       - name: Build solution
-        # TODO: We will need to install (or make sure) an arch compatible nf sdk extension (with path for `NanoFrameworkProjectSystemPath`) before this will work!
+        # TODO: We may need to install (or make sure) an arch compatible nf sdk extension (with path for `NanoFrameworkProjectSystemPath`) before this will work!
         # Check if https://raw.githubusercontent.com/networkfusion/nf-VSCodeExtension/networkfusion-test-vs2022/scripts/build.ps1 can help!
         # As a test, it was downloaded directly and using the static system path!
         # and exclude the buld config: /p:Configuration=${{ env.buildConfiguration }}
