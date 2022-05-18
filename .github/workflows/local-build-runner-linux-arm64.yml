@@ -31,10 +31,10 @@ jobs:
 
       - name: runner checks (to ensure commands are available)
         run: |
-          ./pwsh
+          pwsh
           exit
-          ./nuget
-          ./msbuild
+          nuget
+          msbuild
 
       # TODO: should check nanoff is installed?
       # - name: check nanoff is up-to-date
