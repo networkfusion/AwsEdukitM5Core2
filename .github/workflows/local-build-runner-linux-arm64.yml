@@ -29,12 +29,12 @@ jobs:
           fetch-depth: 0
 
 
-      - name: runner checks
-        run: |
-          pwsh
-          exit
-          nuget
-          msbuild
+      # - name: runner checks
+      #   run: |
+      #     pwsh
+      #     exit
+      #     nuget
+      #     msbuild
 
       # TODO: should check nanoff is installed?
       # - name: check nanoff is up-to-date
