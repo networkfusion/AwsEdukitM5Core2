@@ -31,8 +31,9 @@ jobs:
 
       - name: runner checks (to ensure commands are available)
         run: |
-          pwsh
-          exit
+          # We cannot check for powershell, as we (should) already be using it!
+          # pwsh
+          # exit
           nuget
           msbuild
 
