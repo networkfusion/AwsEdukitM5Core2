@@ -58,7 +58,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="nanoFramework.M5Core2">
-      <HintPath>..\packages\nanoFramework.M5Core2.1.0.49.30985\lib\nanoFramework.M5Core2.dll</HintPath>
+      <HintPath>..\packages\nanoFramework.M5Core2.1.0.54.60782\lib\nanoFramework.M5Core2.dll</HintPath>
     </Reference>
     <Reference Include="nanoFramework.ResourceManager, Version=1.1.4.3, Culture=neutral, PublicKeyToken=c07d481e9758c731">
       <HintPath>..\packages\nanoFramework.ResourceManager.1.1.4\lib\nanoFramework.ResourceManager.dll</HintPath>
@@ -110,7 +110,7 @@
       <HintPath>..\packages\nanoFramework.System.Device.Spi.1.2.1\lib\System.Device.Spi.dll</HintPath>
     </Reference>
     <Reference Include="System.Device.Wifi">
-      <HintPath>..\packages\nanoFramework.System.Device.Wifi.1.4.0.12\lib\System.Device.Wifi.dll</HintPath>
+      <HintPath>..\packages\nanoFramework.System.Device.Wifi.1.4.0.14\lib\System.Device.Wifi.dll</HintPath>
     </Reference>
     <Reference Include="System.Diagnostics.Stopwatch">
       <HintPath>..\packages\nanoFramework.System.Diagnostics.Stopwatch.1.1.1\lib\System.Diagnostics.Stopwatch.dll</HintPath>
@@ -128,7 +128,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Net">
-      <HintPath>..\packages\nanoFramework.System.Net.1.8.2.3\lib\System.Net.dll</HintPath>
+      <HintPath>..\packages\nanoFramework.System.Net.1.8.3.1\lib\System.Net.dll</HintPath>
     </Reference>
     <Reference Include="System.Numerics">
       <HintPath>..\packages\nanoFramework.System.Numerics.1.1.1\lib\System.Numerics.dll</HintPath>
