@@ -76,7 +76,7 @@ jobs:
         run: msbuild ${{ env.solution }}
 
       - name: Run tests
-        uses: microsoft/vstest-action@v0.1.0
+        uses: networkfusion/vstest-action@powershell-xcompatibility
         if: always()
         with:
           testAssembly: |
@@ -86,8 +86,8 @@ jobs:
             !**/TestAdapter/**
             !**/NFUnitTest_DummyAdapter/**
             !**/nanoFramework.TestFramework/**
-          searchFolder: ./**
-          #searchFolder: ${{ github.workspace }}
+          #searchFolder: ./**
+          searchFolder: ${{ github.workspace }}
           platform: ${{ env.BuildPlatform }}
           # vsTestVersion: 'latest'
           codeCoverageEnabled: false # TODO: using this will throw an exception...
