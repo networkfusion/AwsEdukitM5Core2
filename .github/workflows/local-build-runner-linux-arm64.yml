@@ -80,13 +80,14 @@ jobs:
         if: always()
         with:
           testAssembly: |
-            **\NFUnitTest.dll
-            **\*Test*.dll
-            !**\obj\**
-            !**\TestAdapter\**
-            !**\NFUnitTest_DummyAdapter\**
-            !**\nanoFramework.TestFramework\**
-          searchFolder: ${{ github.workspace }}
+            **/NFUnitTest.dll
+            **/*Test*.dll
+            !**/obj/**
+            !**/TestAdapter/**
+            !**/NFUnitTest_DummyAdapter/**
+            !**/nanoFramework.TestFramework/**
+          searchFolder: ./**
+          #searchFolder: ${{ github.workspace }}
           platform: ${{ env.BuildPlatform }}
           # vsTestVersion: 'latest'
           codeCoverageEnabled: false # TODO: using this will throw an exception...
