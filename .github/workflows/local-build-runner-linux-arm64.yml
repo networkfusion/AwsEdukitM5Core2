@@ -34,8 +34,8 @@ jobs:
           # We cannot check for powershell, as we (should) already be using it!
           # pwsh
           # exit
-          nuget
-          msbuild
+          # nuget
+          # msbuild
 
       # TODO: should check nanoff is installed?
       # - name: check nanoff is up-to-date
