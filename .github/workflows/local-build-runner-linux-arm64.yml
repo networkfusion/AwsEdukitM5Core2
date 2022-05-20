@@ -29,13 +29,13 @@ jobs:
           fetch-depth: 0
 
 
-      - name: runner checks (to ensure commands are available)
-        run: |
-          # We cannot check for powershell, as we (should) already be using it!
-          # pwsh
-          # exit
-          # nuget
-          # msbuild
+      # - name: runner checks (to ensure commands are available)
+      #   run: |
+      #     # We cannot check for powershell, as we (should) already be using it!
+      #     # pwsh
+      #     # exit
+      #     # nuget
+      #     # msbuild
 
       # TODO: should check nanoff is installed?
       # - name: check nanoff is up-to-date
@@ -75,34 +75,34 @@ jobs:
         #  /p:Configuration=${{ env.buildConfiguration }}
         run: msbuild ${{ env.solution }}
 
-      # - name: Run tests
-      #   uses: microsoft/vstest-action@v0.1.0
-      #   if: always()
-      #   with:
-      #     testAssembly: |
-      #       **\NFUnitTest.dll
-      #       **\*Test*.dll
-      #       !**\obj\**
-      #       !**\TestAdapter\**
-      #       !**\NFUnitTest_DummyAdapter\**
-      #       !**\nanoFramework.TestFramework\**
-      #     searchFolder: ${{ github.workspace }}
-      #     platform: ${{ env.BuildPlatform }}
-      #     # vsTestVersion: 'latest'
-      #     codeCoverageEnabled: false # TODO: using this will throw an exception...
-      #     runSettingsFile: './Tests/IntegrationTests/nano.runsettings'
+      - name: Run tests
+        uses: microsoft/vstest-action@v0.1.0
+        if: always()
+        with:
+          testAssembly: |
+            **\NFUnitTest.dll
+            **\*Test*.dll
+            !**\obj\**
+            !**\TestAdapter\**
+            !**\NFUnitTest_DummyAdapter\**
+            !**\nanoFramework.TestFramework\**
+          searchFolder: ${{ github.workspace }}
+          platform: ${{ env.BuildPlatform }}
+          # vsTestVersion: 'latest'
+          codeCoverageEnabled: false # TODO: using this will throw an exception...
+          runSettingsFile: './Tests/IntegrationTests/nano.runsettings'
 
-      # - name: Convert Test Report # TODO: requires a bash environment due to `git` command.
-      #   uses: phoenix-actions/test-reporting@v6  # need to find a better action as a bit unstable.
-      #   if: always()    # run this step even if previous step failed
-      #   with:
-      #     name: Test Results
-      #     path: ./**/TestResults/*.trx
-      #     reporter: 'dotnet-trx'
-      #     fail-on-error: false
+      - name: Convert Test Report # TODO: requires a bash environment due to `git` command.
+        uses: phoenix-actions/test-reporting@v6  # need to find a better action as a bit unstable.
+        if: always()    # run this step even if previous step failed
+        with:
+          name: Test Results
+          path: ./**/TestResults/*.trx
+          reporter: 'dotnet-trx'
+          fail-on-error: false
 
       # Self hosted runners need to cleanup after themselves. It is important as might have secrets!
       # TODO: this does not clean it up properly!
-      - name: Cleanup Runner workspace path
-        run: |
-          Remove-Item -path ${{ github.workspace }}/* -Recurse
+      # - name: Cleanup Runner workspace path
+      #   run: |
+      #     Remove-Item -path ${{ github.workspace }}/* -Recurse
