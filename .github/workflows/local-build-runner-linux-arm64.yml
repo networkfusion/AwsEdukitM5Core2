@@ -72,7 +72,8 @@ jobs:
         # TODO: We may need to install (or make sure) an arch compatible nf sdk extension (with path for `NanoFrameworkProjectSystemPath`) before this will work!
         # Check if https://raw.githubusercontent.com/networkfusion/nf-VSCodeExtension/networkfusion-test-vs2022/scripts/build.ps1 can help!
         # As a test, it was downloaded directly and using the static system path!
-        run: msbuild ${{ env.solution }} /p:Configuration=${{ env.buildConfiguration }}
+        #  /p:Configuration=${{ env.buildConfiguration }}
+        run: msbuild ${{ env.solution }}
 
       # - name: Run tests
       #   uses: microsoft/vstest-action@v0.1.0
