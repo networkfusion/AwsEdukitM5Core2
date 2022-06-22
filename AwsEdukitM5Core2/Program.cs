@@ -11,8 +11,15 @@ using nanoFramework.Networking;
 using System;
 using System.Diagnostics;
 using System.Threading;
+using System.Security.Cryptography.X509Certificates;
 using Console = nanoFramework.M5Stack.Console;
+
 using Secrets; // Make sure you adjust the template
+
+using nanoFramework.Azure.Devices.Client;
+using nanoFramework.Azure.Devices.Provisioning.Client;
+
+const string AzureIotDpsAddress = "global.azure-devices-provisioning.net";
 
 M5Core2.InitializeScreen();
 
@@ -21,7 +28,7 @@ Debug.WriteLine("Hello from M5Core2!");
 Console.WriteLine("Hello from M5Core2!");
 Debug.WriteLine("Waiting for WiFi!...");
 Console.WriteLine("Waiting for WiFi!...");
-// Give 60 seconds to the wifi join to happen
+// Give 30 seconds to the wifi join to happen (will retry).
 CancellationTokenSource cs = new(30000);
 var success = false;
 while (!success)
@@ -41,14 +48,64 @@ while (!success)
     }
 }
 
+Debug.WriteLine("Network Setup complete.");
+Console.WriteLine("Network Setup complete.");
+
+
+Debug.WriteLine("Connecting to Azure IoT Central.");
+Console.WriteLine("Connecting to Azure IoT Central.");
+
+M5Core2.TouchEvent += TouchEventCallback;
+
+// Based on https://docs.microsoft.com/en-us/azure/iot-hub/tutorial-x509-openssl
+// However... IT DOES NOT WORK!
+X509Certificate azureCA = new X509Certificate(AzureIotCentral.RootCert); // (AwsEdukitM5Core2.Resource.GetBytes(AwsEdukitM5Core2.Resource.BinaryResources.CAroot));
+X509Certificate2 deviceCert = new X509Certificate2(AzureIotCentral.DeviceCert, AzureIotCentral.PrivateKey, "");
+var provisioning = ProvisioningDeviceClient.Create(AzureIotDpsAddress, AzureIotCentral.IdScope, AzureIotCentral.RegistrationID, deviceCert, azureCA);
+
+var myDevice = provisioning.Register(null, new CancellationTokenSource(30000).Token);
+
+if (myDevice.Status != ProvisioningRegistrationStatusType.Assigned)
+{
+    Debug.WriteLine($"Registration is not assigned: {myDevice.Status}, error message: {myDevice.ErrorMessage} [code {myDevice.ErrorCode}]");
+    Console.WriteLine($"Registration is not assigned: {myDevice.Status}, error message: {myDevice.ErrorMessage} [code {myDevice.ErrorCode}]");
+}
+else
+{
+    Debug.WriteLine($"Device successfully assigned:");
+    Debug.WriteLine($"  Assigned Hub: {myDevice.AssignedHub}");
+    Debug.WriteLine($"  Created time: {myDevice.CreatedDateTimeUtc}");
+    Debug.WriteLine($"  Device ID: {myDevice.DeviceId}");
+    Debug.WriteLine($"  ETAG: {myDevice.Etag}");
+    Debug.WriteLine($"  Generation ID: {myDevice.GenerationId}");
+    Debug.WriteLine($"  Last update: {myDevice.LastUpdatedDateTimeUtc}");
+    Debug.WriteLine($"  Status: {myDevice.Status}");
+    Debug.WriteLine($"  Sub Status: {myDevice.Substatus}");
+
+    var device = new DeviceClient(myDevice.AssignedHub, myDevice.DeviceId, deviceCert, nanoFramework.M2Mqtt.Messages.MqttQoSLevel.AtMostOnce, azureCA);
+
+    var res = device.Open();
+    if (!res)
+    {
+        Debug.WriteLine($"can't open the device");
+        return;
+    }
+
+    var twin = device.GetTwin(new CancellationTokenSource(15000).Token);
+
+    if (twin != null)
+    {
+        Debug.WriteLine($"Got twins");
+        Debug.WriteLine($"  {twin.Properties.Desired.ToJson()}");
+    }
+}
+
 Console.Clear();
 
 
-Debug.WriteLine("Network Setup complete.");
-Console.WriteLine("Network Setup complete.");
+
 AddStaticDisplayVariables();
 
-M5Core2.TouchEvent += TouchEventCallback;
 
 Thread.Sleep(Timeout.Infinite);
 
