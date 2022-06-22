@@ -57,10 +57,8 @@ Console.WriteLine("Connecting to Azure IoT Central.");
 
 M5Core2.TouchEvent += TouchEventCallback;
 
-// Based on https://docs.microsoft.com/en-us/azure/iot-hub/tutorial-x509-openssl
-// However... IT DOES NOT WORK!
-X509Certificate azureCA = new X509Certificate(AzureIotCentral.RootCert); // (AwsEdukitM5Core2.Resource.GetBytes(AwsEdukitM5Core2.Resource.BinaryResources.CAroot));
-X509Certificate2 deviceCert = new X509Certificate2(AzureIotCentral.DeviceCert, AzureIotCentral.PrivateKey, "");
+X509Certificate azureCA = new X509Certificate(AzureIotCentral.CaRootCertificates);
+X509Certificate2 deviceCert = new X509Certificate2(AzureIotCentral.DeviceCertificate, AzureIotCentral.DeviceCertificatePrivateKey, "");
 var provisioning = ProvisioningDeviceClient.Create(AzureIotDpsAddress, AzureIotCentral.IdScope, AzureIotCentral.RegistrationID, deviceCert, azureCA);
 
 var myDevice = provisioning.Register(null, new CancellationTokenSource(30000).Token);
