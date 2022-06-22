@@ -1,7 +1,7 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-// Latest known working interpreter = `1.8.0.100`
+// Latest known working interpreter = `1.8.0.344`
 // Perform updates using:
 // nanoff --target M5Core2 --update --serialport COM16
 
@@ -16,20 +16,33 @@ using Secrets; // Make sure you adjust the template
 
 M5Core2.InitializeScreen();
 
+Thread.Sleep(5000); // Helps with debug!
 Debug.WriteLine("Hello from M5Core2!");
-
+Console.WriteLine("Hello from M5Core2!");
+Debug.WriteLine("Waiting for WiFi!...");
+Console.WriteLine("Waiting for WiFi!...");
 // Give 60 seconds to the wifi join to happen
-CancellationTokenSource cs = new(60000);
-var success = WifiNetworkHelper.ConnectDhcp(WiFi.Ssid, WiFi.Password, requiresDateTime: true, token: cs.Token);
-if (!success)
+CancellationTokenSource cs = new(30000);
+var success = false;
+while (!success)
 {
-    // Something went wrong, you can get details with the ConnectionError property:
-    Debug.WriteLine($"Can't connect to the network, error: {WifiNetworkHelper.Status}");
-    if (WifiNetworkHelper.HelperException != null)
+    success = WifiNetworkHelper.ConnectDhcp(WiFi.Ssid, WiFi.Password, requiresDateTime: true, token: cs.Token);
+
+    if (!success)
     {
-        Debug.WriteLine($"ex: {WifiNetworkHelper.HelperException}");
+        // Something went wrong, you can get details with the ConnectionError property:
+        Debug.WriteLine($"Can't connect to the network, error: {WifiNetworkHelper.Status}");
+        Console.WriteLine($"Can't connect to the network, error: {WifiNetworkHelper.Status}");
+        if (WifiNetworkHelper.HelperException != null)
+        {
+            Debug.WriteLine($"ex: {WifiNetworkHelper.HelperException}");
+            Console.WriteLine($"ex: {WifiNetworkHelper.HelperException}");
+        }
     }
 }
+
+Console.Clear();
+
 
 Debug.WriteLine("Network Setup complete.");
 Console.WriteLine("Network Setup complete.");
