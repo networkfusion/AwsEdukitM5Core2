@@ -3,7 +3,7 @@
 
 // Latest known working interpreter = `1.8.0.344`
 // Perform updates using:
-// nanoff --target M5Core2 --update --serialport COM16
+// nanoff --target M5Core2 --update --serialport COM10
 
 using nanoFramework.M5Core2;
 using nanoFramework.M5Stack;
@@ -23,7 +23,7 @@ const string AzureIotDpsAddress = "global.azure-devices-provisioning.net";
 
 M5Core2.InitializeScreen();
 
-Thread.Sleep(5000); // Helps with debug!
+Thread.Sleep(5000); // Helps with debug! Remove if not required!
 Debug.WriteLine("Hello from M5Core2!");
 Console.WriteLine("Hello from M5Core2!");
 Debug.WriteLine("Waiting for WiFi!...");
@@ -51,15 +51,15 @@ while (!success)
 Debug.WriteLine("Network Setup complete.");
 Console.WriteLine("Network Setup complete.");
 
+M5Core2.TouchEvent += TouchEventCallback;
 
 Debug.WriteLine("Connecting to Azure IoT Central.");
 Console.WriteLine("Connecting to Azure IoT Central.");
 
-M5Core2.TouchEvent += TouchEventCallback;
 
-X509Certificate azureCA = new X509Certificate(AzureIotCentral.CaRootCertificates);
-X509Certificate2 deviceCert = new X509Certificate2(AzureIotCentral.DeviceCertificate, AzureIotCentral.DeviceCertificatePrivateKey, "");
-var provisioning = ProvisioningDeviceClient.Create(AzureIotDpsAddress, AzureIotCentral.IdScope, AzureIotCentral.RegistrationID, deviceCert, azureCA);
+X509Certificate azureCA = new X509Certificate(AzureIot.CaRootCertificates);
+X509Certificate2 deviceCert = new X509Certificate2(AzureIot.DeviceCertificate, AzureIot.DeviceCertificatePrivateKey, "");
+var provisioning = ProvisioningDeviceClient.Create(AzureIotDpsAddress, AzureIot.IdScope, AzureIot.RegistrationID, deviceCert, azureCA);
 
 var myDevice = provisioning.Register(null, new CancellationTokenSource(30000).Token);
 
@@ -85,7 +85,7 @@ else
     var res = device.Open();
     if (!res)
     {
-        Debug.WriteLine($"can't open the device");
+        Debug.WriteLine($"Failed to connect the device with IoT Central");
         return;
     }
 
@@ -93,8 +93,12 @@ else
 
     if (twin != null)
     {
-        Debug.WriteLine($"Got twins");
+        Debug.WriteLine($"Received desired device twin properties.");
         Debug.WriteLine($"  {twin.Properties.Desired.ToJson()}");
+    }
+    else
+    {
+        Debug.WriteLine($"Failed to receive the desired device twin properties.");
     }
 }
 
