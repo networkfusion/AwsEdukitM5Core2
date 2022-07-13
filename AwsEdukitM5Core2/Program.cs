@@ -1,7 +1,7 @@
-// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
+// Copyright 2021 Robin Jones (NetworkFusion).
+// This file is distributed under the MIT license.
 
-// Latest known working interpreter = `1.8.0.344`
+// Latest known working interpreter vwersion = `1.8.0.431`
 // Perform updates using:
 // nanoff --target M5Core2 --update --serialport COM10
 
@@ -57,8 +57,8 @@ Debug.WriteLine("Connecting to Azure IoT Central.");
 Console.WriteLine("Connecting to Azure IoT Central.");
 
 
-X509Certificate azureCA = new X509Certificate(AzureIot.CaRootCertificates);
-X509Certificate2 deviceCert = new X509Certificate2(AzureIot.DeviceCertificate, AzureIot.DeviceCertificatePrivateKey, "");
+X509Certificate azureCA = new(AzureIot.CaRootCertificates);
+X509Certificate2 deviceCert = new(AzureIot.DeviceCertificate, AzureIot.DeviceCertificatePrivateKey, "");
 var provisioning = ProvisioningDeviceClient.Create(AzureIotDpsAddress, AzureIot.IdScope, AzureIot.RegistrationID, deviceCert, azureCA);
 
 var myDevice = provisioning.Register(null, new CancellationTokenSource(30000).Token);
