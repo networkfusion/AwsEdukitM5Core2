@@ -72,11 +72,11 @@ else
 {
     Debug.WriteLine($"Device successfully assigned:");
     Debug.WriteLine($"  Assigned Hub: {myDevice.AssignedHub}");
-    Debug.WriteLine($"  Created time: {myDevice.CreatedDateTimeUtc}");
+    Debug.WriteLine($"  Created time: {myDevice.CreatedDateTimeUtc.ToString("o")}");
     Debug.WriteLine($"  Device ID: {myDevice.DeviceId}");
     Debug.WriteLine($"  ETAG: {myDevice.Etag}");
     Debug.WriteLine($"  Generation ID: {myDevice.GenerationId}");
-    Debug.WriteLine($"  Last update: {myDevice.LastUpdatedDateTimeUtc}");
+    Debug.WriteLine($"  Last update: {myDevice.LastUpdatedDateTimeUtc.ToString("o")}");
     Debug.WriteLine($"  Status: {myDevice.Status}");
     Debug.WriteLine($"  Sub Status: {myDevice.Substatus}");
 
@@ -183,8 +183,8 @@ void AddStaticDisplayVariables()
     Console.WriteLine("");
     Debug.WriteLine($"IP = {System.Net.NetworkInformation.IPGlobalProperties.GetIPAddress()}");
     Console.WriteLine($"IP = {System.Net.NetworkInformation.IPGlobalProperties.GetIPAddress()}");
-    Debug.WriteLine($"RTC = {DateTime.UtcNow}");
-    Console.WriteLine($"RTC = {DateTime.UtcNow}");
+    Debug.WriteLine($"RTC = {DateTime.UtcNow.ToString("o")}");
+    Console.WriteLine($"RTC = {DateTime.UtcNow.ToString("o")}");
     Debug.WriteLine($"CPU_T = {M5Core2.Power.GetInternalTemperature().DegreesCelsius}°C");
     Console.WriteLine($"CPU_T = {M5Core2.Power.GetInternalTemperature().DegreesCelsius}_C");
     //Debug.WriteLine($"GYRO = {M5Core2.AccelerometerGyroscope.GetGyroscope()}");
