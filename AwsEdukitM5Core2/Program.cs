@@ -1,7 +1,7 @@
 // Copyright 2021 Robin Jones (NetworkFusion).
 // This file is distributed under the MIT license.
 
-// Latest known working interpreter vwersion = `1.8.0.431`
+// Latest known working interpreter vwersion = `1.8.0.495`
 // Perform updates using:
 // nanoff --target M5Core2 --update --serialport COM10
 
