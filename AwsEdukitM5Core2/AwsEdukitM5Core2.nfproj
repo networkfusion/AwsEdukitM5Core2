@@ -19,6 +19,7 @@
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
     <Compile Include="Atecc608.cs" />
+    <Compile Include="VaisalaHmp1xx.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Secrets.cs" />
@@ -141,6 +142,9 @@
     </Reference>
     <Reference Include="UnitsNet.Power">
       <HintPath>packages\UnitsNet.nanoFramework.Power.5.50.0\lib\UnitsNet.Power.dll</HintPath>
+    </Reference>
+    <Reference Include="UnitsNet.RelativeHumidity">
+      <HintPath>packages\UnitsNet.nanoFramework.RelativeHumidity.5.50.0\lib\UnitsNet.RelativeHumidity.dll</HintPath>
     </Reference>
     <Reference Include="UnitsNet.Temperature">
       <HintPath>packages\UnitsNet.nanoFramework.Temperature.5.50.0\lib\UnitsNet.Temperature.dll</HintPath>

@@ -1,9 +1,9 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-// Latest known working interpreter = `1.8.0.344`
+// Latest known working interpreter = `1.9.1.52`
 // Perform updates using:
-// nanoff --target M5Core2 --update --serialport COM16
+// nanoff --target M5Core2 --update --serialport COM5 --masserase
 
 using nanoFramework.M5Core2;
 using nanoFramework.M5Stack;
@@ -13,6 +13,26 @@ using System.Diagnostics;
 using System.Threading;
 using Console = nanoFramework.M5Stack.Console;
 using Secrets; // Make sure you adjust the template
+using System.IO.Ports;
+using nanoFramework.Hardware.Esp32;
+using AwsEdukitM5Core2;
+
+var ports = SerialPort.GetPortNames();
+Debug.WriteLine("Available SerialPorts:");
+foreach (var port in ports)
+{
+    Debug.WriteLine(port);
+}
+
+// Test the HMP155
+// PORT-C (Blue) - UART
+// pins 13 (RXD1 - GPIO3) / 14 (TXD1 - GPIO1)
+Configuration.SetPinFunction(Gpio.IO13, DeviceFunction.COM3_RX);
+Configuration.SetPinFunction(Gpio.IO14, DeviceFunction.COM3_TX);
+var PortC_UART = "COM3";
+
+var Hmp155 = new VaisalaHmp1xx(PortC_UART);
+Hmp155.Open();
 
 M5Core2.InitializeScreen();
 
@@ -21,8 +41,8 @@ Debug.WriteLine("Hello from M5Core2!");
 Console.WriteLine("Hello from M5Core2!");
 Debug.WriteLine("Waiting for WiFi!...");
 Console.WriteLine("Waiting for WiFi!...");
-// Give 60 seconds to the wifi join to happen
-CancellationTokenSource cs = new(30000);
+// Give 30 seconds to the wifi connection to happen
+CancellationTokenSource cs = new(30_000);
 var success = false;
 while (!success)
 {
@@ -50,7 +70,14 @@ AddStaticDisplayVariables();
 
 M5Core2.TouchEvent += TouchEventCallback;
 
-Thread.Sleep(Timeout.Infinite);
+for( ; ; ) // a forever loop
+{
+    //Hmp155.GetSensorInfo();
+    Thread.Sleep(10_000); // every 10 seconds
+    Console.Clear();
+    AddStaticDisplayVariables(); // update the static display variables.
+}
+
 
 void ButtonHapticFeedback()
 {
@@ -125,9 +152,12 @@ void AddStaticDisplayVariables()
     Debug.WriteLine($"IP = {System.Net.NetworkInformation.IPGlobalProperties.GetIPAddress()}");
     Console.WriteLine($"IP = {System.Net.NetworkInformation.IPGlobalProperties.GetIPAddress()}");
     Debug.WriteLine($"RTC = {DateTime.UtcNow}");
-    Console.WriteLine($"RTC = {DateTime.UtcNow}");
+    Console.WriteLine($"RTC = {DateTime.UtcNow.ToString("o")}");
     Debug.WriteLine($"CPU_T = {M5Core2.Power.GetInternalTemperature().DegreesCelsius}°C");
-    Console.WriteLine($"CPU_T = {M5Core2.Power.GetInternalTemperature().DegreesCelsius}_C");
+    Console.WriteLine($"CPU_T = {M5Core2.Power.GetInternalTemperature().DegreesCelsius}*C");
     //Debug.WriteLine($"GYRO = {M5Core2.AccelerometerGyroscope.GetGyroscope()}");
     //Console.WriteLine($"GYRO = {M5Core2.AccelerometerGyroscope.GetGyroscope()}");
+    Console.WriteLine($"HMP-T = {Hmp155.GetTemperature().DegreesCelsius}*C");
+    Console.WriteLine($"HMP-H = {Hmp155.GetHumidity().Percent}%");
+    Console.WriteLine("");
 }
