@@ -112,18 +112,24 @@ void TouchEventCallback(object sender, TouchEventArgs e)
         ButtonHapticFeedback();
         Debug.WriteLine(StrLB);
         Console.WriteLine(StrLB);
+        Console.WriteLine("Measurement stop!");
+        Hmp155.MeasurementStop();
     }
     else if ((e.TouchEventCategory & TouchEventCategory.MiddleButton) == TouchEventCategory.MiddleButton)
     {
         ButtonHapticFeedback();
         Debug.WriteLine(StrMB);
         Console.WriteLine(StrMB);
+        Console.WriteLine("Get Info!");
+        Hmp155.GetSensorInfo();
     }
     else if ((e.TouchEventCategory & TouchEventCategory.RightButton) == TouchEventCategory.RightButton)
     {
         ButtonHapticFeedback();
         Debug.WriteLine(StrRB);
         Console.WriteLine(StrRB);
+        Console.WriteLine("Measurement start!");
+        Hmp155.MeasurementStart();
     }
 
     if ((e.TouchEventCategory & TouchEventCategory.Moving) == TouchEventCategory.Moving)
