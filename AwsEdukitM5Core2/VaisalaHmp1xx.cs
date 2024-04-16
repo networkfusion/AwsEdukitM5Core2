@@ -63,7 +63,7 @@ namespace AwsEdukitM5Core2
                 Parity = Parity.Even,
                 StopBits = StopBits.One,
                 Handshake = Handshake.None,
-                NewLine = "\r\n" // this sensor needs to use CRLF for writes.
+                NewLine = "\r\n" // this sensor needs to use CRLF for writes, but needs some CR encorragement sometimes.
             };
         }
 
@@ -98,7 +98,7 @@ namespace AwsEdukitM5Core2
             if (_sensor.IsOpen)
             {
                 expectingCommandResponse = true;
-                _sensor.WriteLine("\r\n\r\n\r\ns\r\n");
+                _sensor.WriteLine("\r\r\rs");
             }
         }
 
@@ -106,7 +106,7 @@ namespace AwsEdukitM5Core2
         {
             if (_sensor.IsOpen)
             {
-                _sensor.WriteLine("\r\n\r\n\r\nr\r\n");
+                _sensor.WriteLine("r");
                 expectingCommandResponse = false;
             }
         }
@@ -122,11 +122,11 @@ namespace AwsEdukitM5Core2
             {
                 //for (int i = 0; i < 10; i++)
                 //{
-                _sensor.WriteLine("\r\n\r\n\r\ns\r\n");
+                _sensor.WriteLine("\r\r\rs");
                 //Thread.Sleep(2000); // allow enough time for the command
                                     //}
 
-                _sensor.WriteLine("?\r\n"); // Get the device info
+                _sensor.WriteLine("?"); // Get the device info
                 Thread.Sleep(100); // allow enough time for the info to be returned
                 while (_sensor.BytesToRead > 0)
                 {
@@ -160,7 +160,7 @@ namespace AwsEdukitM5Core2
                 Debug.WriteLine($"Failed to get sensor info: {ex.Message}");
             }
 
-            _sensor.WriteLine("r\r\n"); // Start sending the telemetry again.
+            _sensor.WriteLine("r"); // Start sending the telemetry again.
             expectingCommandResponse = false;
         }
 
