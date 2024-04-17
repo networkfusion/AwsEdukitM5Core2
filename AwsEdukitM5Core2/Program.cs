@@ -16,19 +16,6 @@ using Secrets; // Make sure you adjust the template
 using System.IO.Ports;
 using AwsEdukitM5Core2;
 
-var ports = SerialPort.GetPortNames();
-Debug.WriteLine("Available SerialPorts:");
-foreach (var port in ports)
-{
-    Debug.WriteLine(port);
-}
-
-// Test the HMP155
-// PORT-C (Blue) - UART (COM2)
-// pins 13 (RXD1 - GPIO3) / 14 (TXD1 - GPIO1)
-var Hmp155 = new VaisalaHmp1xx("COM2");
-Hmp155.Open();
-
 M5Core2.InitializeScreen();
 
 Thread.Sleep(5000); // Helps with debug!
@@ -59,19 +46,37 @@ while (!success)
 Console.Clear();
 
 
+var ports = SerialPort.GetPortNames();
+Debug.WriteLine("Available SerialPorts:");
+foreach (var port in ports)
+{
+    Debug.WriteLine(port);
+}
+
 Debug.WriteLine("Network Setup complete.");
 Console.WriteLine("Network Setup complete.");
-AddStaticDisplayVariables();
+
+// Test the HMP155
+// PORT-C (Blue) - UART (COM2)
+// pins 13 (RXD1 - GPIO3) / 14 (TXD1 - GPIO1)
+var Hmp155 = new VaisalaHmp1xx("COM2");
 
 M5Core2.TouchEvent += TouchEventCallback;
 
-for( ; ; ) // a forever loop
+new Thread(() =>
 {
-    //Hmp155.GetSensorInfo();
-    Thread.Sleep(10_000); // every 10 seconds
-    Console.Clear();
-    AddStaticDisplayVariables(); // update the static display variables.
-}
+    Hmp155.Open();
+
+    AddStaticDisplayVariables();
+    for ( ; ; ) // a forever loop
+    {
+        Thread.Sleep(10_000); // every 10 seconds
+        Console.Clear();
+        AddStaticDisplayVariables(); // update the static display variables.
+    }
+}).Start();
+
+Thread.Sleep(Timeout.Infinite);
 
 
 void ButtonHapticFeedback()
@@ -158,7 +163,7 @@ void AddStaticDisplayVariables()
     Console.WriteLine($"CPU_T = {M5Core2.Power.GetInternalTemperature().DegreesCelsius}*C");
     //Debug.WriteLine($"GYRO = {M5Core2.AccelerometerGyroscope.GetGyroscope()}");
     //Console.WriteLine($"GYRO = {M5Core2.AccelerometerGyroscope.GetGyroscope()}");
-    Console.WriteLine($"HMP-T = {Hmp155.GetTemperature().DegreesCelsius}*C");
-    Console.WriteLine($"HMP-H = {Hmp155.GetHumidity().Percent}%");
+    Console.WriteLine($"HMP-H = {Hmp155.GetRelativeHumidity().Percent}%");
+    Console.WriteLine($"HMP-T = {Hmp155.GetProbeTemperature().DegreesCelsius}*C");
     Console.WriteLine("");
 }

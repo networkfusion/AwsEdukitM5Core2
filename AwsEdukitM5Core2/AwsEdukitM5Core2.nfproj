@@ -19,6 +19,7 @@
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
     <Compile Include="Atecc608.cs" />
+    <Compile Include="DebugHelper.cs" />
     <Compile Include="VaisalaHmp1xx.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -139,6 +140,9 @@
     </Reference>
     <Reference Include="UnitsNet.ElectricPotential">
       <HintPath>packages\UnitsNet.nanoFramework.ElectricPotential.5.50.0\lib\UnitsNet.ElectricPotential.dll</HintPath>
+    </Reference>
+    <Reference Include="UnitsNet.MassConcentration">
+      <HintPath>packages\UnitsNet.nanoFramework.MassConcentration.5.50.0\lib\UnitsNet.MassConcentration.dll</HintPath>
     </Reference>
     <Reference Include="UnitsNet.Power">
       <HintPath>packages\UnitsNet.nanoFramework.Power.5.50.0\lib\UnitsNet.Power.dll</HintPath>
