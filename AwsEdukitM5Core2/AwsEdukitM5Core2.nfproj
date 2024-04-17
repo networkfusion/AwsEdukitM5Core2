@@ -20,7 +20,8 @@
   <ItemGroup>
     <Compile Include="Atecc608.cs" />
     <Compile Include="DebugHelper.cs" />
-    <Compile Include="VaisalaHmp1xx.cs" />
+    <Compile Include="VaisalaHmp1xx\DeviceInformation.cs" />
+    <Compile Include="VaisalaHmp1xx\VaisalaHmp1xx.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Secrets.cs" />

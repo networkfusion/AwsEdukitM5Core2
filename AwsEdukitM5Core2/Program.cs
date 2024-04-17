@@ -15,6 +15,7 @@ using Console = nanoFramework.M5Stack.Console;
 using Secrets; // Make sure you adjust the template
 using System.IO.Ports;
 using AwsEdukitM5Core2;
+using AwsEdukitM5Core2.VaisalaHmp1xx;
 
 M5Core2.InitializeScreen();
 
@@ -163,7 +164,8 @@ void AddStaticDisplayVariables()
     Console.WriteLine($"CPU_T = {M5Core2.Power.GetInternalTemperature().DegreesCelsius}*C");
     //Debug.WriteLine($"GYRO = {M5Core2.AccelerometerGyroscope.GetGyroscope()}");
     //Console.WriteLine($"GYRO = {M5Core2.AccelerometerGyroscope.GetGyroscope()}");
-    Console.WriteLine($"HMP-H = {Hmp155.GetRelativeHumidity().Percent}%");
-    Console.WriteLine($"HMP-T = {Hmp155.GetProbeTemperature().DegreesCelsius}*C");
+    Console.WriteLine($"HMP-RH = {Hmp155.GetRelativeHumidity().Percent}%");
+    Console.WriteLine($"HMP-Ta = {Hmp155.GetProbeTemperature().DegreesCelsius}*C");
+    //Console.WriteLine($"HMP-Tw = {Hmp155.GetWetBulbTemperature().DegreesCelsius}*C");
     Console.WriteLine("");
 }
