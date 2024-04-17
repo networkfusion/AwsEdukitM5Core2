@@ -63,7 +63,7 @@
       <HintPath>packages\nanoFramework.Hardware.Esp32.1.6.12\lib\nanoFramework.Hardware.Esp32.dll</HintPath>
     </Reference>
     <Reference Include="nanoFramework.M5Core2">
-      <HintPath>packages\nanoFramework.M5Core2.1.1.211\lib\nanoFramework.M5Core2.dll</HintPath>
+      <HintPath>packages\nanoFramework.M5Core2.1.1.213\lib\nanoFramework.M5Core2.dll</HintPath>
     </Reference>
     <Reference Include="nanoFramework.ResourceManager">
       <HintPath>packages\nanoFramework.ResourceManager.1.2.19\lib\nanoFramework.ResourceManager.dll</HintPath>

@@ -14,7 +14,6 @@ using System.Threading;
 using Console = nanoFramework.M5Stack.Console;
 using Secrets; // Make sure you adjust the template
 using System.IO.Ports;
-using nanoFramework.Hardware.Esp32;
 using AwsEdukitM5Core2;
 
 var ports = SerialPort.GetPortNames();
@@ -25,13 +24,9 @@ foreach (var port in ports)
 }
 
 // Test the HMP155
-// PORT-C (Blue) - UART
+// PORT-C (Blue) - UART (COM2)
 // pins 13 (RXD1 - GPIO3) / 14 (TXD1 - GPIO1)
-Configuration.SetPinFunction(Gpio.IO13, DeviceFunction.COM3_RX);
-Configuration.SetPinFunction(Gpio.IO14, DeviceFunction.COM3_TX);
-var PortC_UART = "COM3";
-
-var Hmp155 = new VaisalaHmp1xx(PortC_UART);
+var Hmp155 = new VaisalaHmp1xx("COM2");
 Hmp155.Open();
 
 M5Core2.InitializeScreen();
