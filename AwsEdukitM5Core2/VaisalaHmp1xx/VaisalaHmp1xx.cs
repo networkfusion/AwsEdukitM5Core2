@@ -16,15 +16,15 @@ namespace AwsEdukitM5Core2.VaisalaHmp1xx
     public class VaisalaHmp1xx : IDisposable
     {
         // TODO: should be an abstract class
-        private SerialPort _sensor;
+        private readonly SerialPort _sensor;
         private static double _humidity;
-        private static double _temperature;
+        private static readonly double _temperature;
         private static double _probeTemperature;
         // Derived parameters
-        private static double _frostPointTemperature;
-        private static double _dewPointTemperature;
-        private static double _mixingRatio;
-        private static double _wetbulbTemperature;
+        private static readonly double _frostPointTemperature;
+        private static readonly double _dewPointTemperature;
+        private static readonly double _mixingRatio;
+        private static readonly double _wetbulbTemperature;
 
         // The following format was the default one I retrived from my sensor. I am not sure if it is the actual default!
         //private const string defaultTelemtryFormat = "3.1 \"RH=\" RH \" \" U4 3.1 \"Ta=\" Ta \" \" U3 \\r \\n";
