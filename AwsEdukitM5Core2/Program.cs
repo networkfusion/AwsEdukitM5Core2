@@ -17,6 +17,16 @@ using System.IO.Ports;
 using AwsEdukitM5Core2;
 using AwsEdukitM5Core2.VaisalaHmp1xx;
 
+//enum Display
+//{
+//    Startup,
+//    Main,
+//    Ip,
+//    Info,
+//}
+
+//Display display = Display.Startup;
+
 M5Core2.InitializeScreen();
 
 Thread.Sleep(5000); // Helps with debug!
@@ -68,17 +78,16 @@ new Thread(() =>
 {
     Hmp155.Open();
 
-    AddStaticDisplayVariables();
+    AddStaticDisplayVariables_MainDisplay();
     for ( ; ; ) // a forever loop
     {
         Thread.Sleep(10_000); // every 10 seconds
         Console.Clear();
-        AddStaticDisplayVariables(); // update the static display variables.
+        AddStaticDisplayVariables_MainDisplay(); // update the static display variables.
     }
 }).Start();
 
 Thread.Sleep(Timeout.Infinite);
-
 
 void ButtonHapticFeedback()
 {
@@ -150,11 +159,12 @@ void TouchEventCallback(object sender, TouchEventArgs e)
         Debug.WriteLine(StrDoubleTouch);
         Console.Write(StrDoubleTouch);
     }
-    AddStaticDisplayVariables();
+    AddStaticDisplayVariables_MainDisplay();
 }
 
-void AddStaticDisplayVariables()
+void AddStaticDisplayVariables_MainDisplay()
 {
+    Console.WriteLine("VAISALA HMP155");
     Console.WriteLine("");
     Debug.WriteLine($"IP = {System.Net.NetworkInformation.IPGlobalProperties.GetIPAddress()}");
     Console.WriteLine($"IP = {System.Net.NetworkInformation.IPGlobalProperties.GetIPAddress()}");
