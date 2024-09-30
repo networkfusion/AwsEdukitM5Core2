@@ -18,7 +18,7 @@
   </PropertyGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
-    <Compile Include="Atecc608.cs" />
+    <Compile Include="ATECCx08\Ateccx08.cs" />
     <Compile Include="DebugHelper.cs" />
     <Compile Include="VaisalaHmp1xx\DeviceInformation.cs" />
     <Compile Include="VaisalaHmp1xx\VaisalaHmp1xx.cs" />
@@ -27,6 +27,7 @@
     <Compile Include="Secrets.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ATECCx08\README.md" />
     <None Include="packages.config" />
     <None Include="Secrets.cs" />
     <None Include="Secrets.cs.template" />
