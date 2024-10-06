@@ -1,7 +1,7 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-// Latest known working interpreter = `1.12.0.76`
+// Latest known working interpreter = `1.12.0.166`
 // Perform updates using:
 // nanoff --target M5Core2 --update --serialport COM7 --masserase
 
