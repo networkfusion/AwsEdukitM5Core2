@@ -1,9 +1,9 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-// Latest known working interpreter = `1.12.0.166`
+// Latest known working interpreter = `1.12.1.33`
 // Perform updates using:
-// nanoff --target M5Core2 --update --serialport COM7 --masserase
+// nanoff --target M5Core2 --update --serialport COM7 --masserase --fwversion 1.12.1.33
 
 using nanoFramework.M5Core2;
 using nanoFramework.M5Stack;
@@ -177,5 +177,7 @@ void AddStaticDisplayVariables_MainDisplay()
     Console.WriteLine($"HMP-RH = {Hmp155.GetRelativeHumidity().Percent}%");
     Console.WriteLine($"HMP-Ta = {Hmp155.GetProbeTemperature().DegreesCelsius}*C");
     //Console.WriteLine($"HMP-Tw = {Hmp155.GetWetBulbTemperature().DegreesCelsius}*C");
+    //Console.WriteLine($"HMP-Tf = {Hmp155.GetFrostPointTemperature().DegreesCelsius}*C");
+    //Console.WriteLine($"HMP-Td = {Hmp155.GetDewPointTemperature().DegreesCelsius}*C");
     Console.WriteLine("");
 }
