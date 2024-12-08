@@ -370,7 +370,7 @@ namespace AwsEdukitM5Core2.VaisalaHmp1xx
 
         private static void DecodeMessage(string message)
         {
-            //TODO: better handle message formats as defined with sending the `FORM`.
+            //TODO: better handle message formats as defined with sending the `FORM`. For the HMP110, it will likely use 'T' rather than 'Ta'
             //Debug.WriteLine(message);
 
             if (message.StartsWith("RH=") && message.Contains("%RH Ta=") && message.TrimEnd(' ').EndsWith("'C"))

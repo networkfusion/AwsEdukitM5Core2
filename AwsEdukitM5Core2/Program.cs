@@ -17,23 +17,16 @@ using System.IO.Ports;
 using AwsEdukitM5Core2;
 using AwsEdukitM5Core2.VaisalaHmp1xx;
 
-//enum Display
-//{
-//    Startup,
-//    Main,
-//    Ip,
-//    Info,
-//}
-
-//Display display = Display.Startup;
 
 M5Core2.InitializeScreen();
+Menu.CurrentDisplayContext = DisplayContext.Startup;
 
-Thread.Sleep(5000); // Helps with debug!
+Thread.Sleep(5_000); // Helps with debug!
 Debug.WriteLine("Hello from M5Core2!");
 Console.WriteLine("Hello from M5Core2!");
-Debug.WriteLine("Waiting for WiFi!...");
-Console.WriteLine("Waiting for WiFi!...");
+Debug.WriteLine($"Waiting for WiFi...{WiFi.Ssid}");
+Console.WriteLine("Waiting for WiFi...");
+Console.WriteLine($"  SSID: \"{WiFi.Ssid}\"");
 // Give 30 seconds to the wifi connection to happen
 CancellationTokenSource cs = new(30_000);
 var success = false;
@@ -54,6 +47,9 @@ while (!success)
     }
 }
 
+Debug.WriteLine("Network Setup complete.");
+Console.WriteLine("Network Setup complete.");
+Thread.Sleep(5_000); // Helps with debug!
 Console.Clear();
 
 
@@ -64,8 +60,7 @@ foreach (var port in ports)
     Debug.WriteLine(port);
 }
 
-Debug.WriteLine("Network Setup complete.");
-Console.WriteLine("Network Setup complete.");
+Menu.CurrentDisplayContext = DisplayContext.DeviceTelemetry;
 
 // Test the HMP155
 // PORT-C (Blue) - UART (COM2)
@@ -81,7 +76,7 @@ new Thread(() =>
     AddStaticDisplayVariables_MainDisplay();
     for ( ; ; ) // a forever loop
     {
-        Thread.Sleep(10_000); // every 10 seconds
+        Thread.Sleep(15_000); // every 15 seconds
         Console.Clear();
         AddStaticDisplayVariables_MainDisplay(); // update the static display variables.
     }
@@ -89,12 +84,6 @@ new Thread(() =>
 
 Thread.Sleep(Timeout.Infinite);
 
-void ButtonHapticFeedback()
-{
-    M5Core2.Vibrate = true;
-    Thread.Sleep(150);
-    M5Core2.Vibrate = false;
-}
 
 
 void TouchEventCallback(object sender, TouchEventArgs e)
@@ -119,23 +108,24 @@ void TouchEventCallback(object sender, TouchEventArgs e)
 
     if ((e.TouchEventCategory & TouchEventCategory.LeftButton) == TouchEventCategory.LeftButton)
     {
-        ButtonHapticFeedback();
+        Menu.ButtonHapticFeedback();
         Debug.WriteLine(StrLB);
         Console.WriteLine(StrLB);
-        Console.WriteLine("Measurement stop!");
-        Hmp155.MeasurementStop();
+        Menu.CurrentDisplayContext = DisplayContext.DeviceTelemetry;
+
     }
     else if ((e.TouchEventCategory & TouchEventCategory.MiddleButton) == TouchEventCategory.MiddleButton)
     {
-        ButtonHapticFeedback();
+        Menu.ButtonHapticFeedback();
         Debug.WriteLine(StrMB);
         Console.WriteLine(StrMB);
+        Menu.CurrentDisplayContext = DisplayContext.DeviceInformation;
         Console.WriteLine("Get Info!");
         Hmp155.GetSensorInfo();
     }
     else if ((e.TouchEventCategory & TouchEventCategory.RightButton) == TouchEventCategory.RightButton)
     {
-        ButtonHapticFeedback();
+        Menu.ButtonHapticFeedback();
         Debug.WriteLine(StrRB);
         Console.WriteLine(StrRB);
         Console.WriteLine("Measurement start!");
@@ -164,20 +154,34 @@ void TouchEventCallback(object sender, TouchEventArgs e)
 
 void AddStaticDisplayVariables_MainDisplay()
 {
-    Console.WriteLine("VAISALA HMP155");
+    Console.WriteLine(Menu.HeaderText);
     Console.WriteLine("");
-    Debug.WriteLine($"IP = {System.Net.NetworkInformation.IPGlobalProperties.GetIPAddress()}");
-    Console.WriteLine($"IP = {System.Net.NetworkInformation.IPGlobalProperties.GetIPAddress()}");
     Debug.WriteLine($"RTC = {DateTime.UtcNow}");
     Console.WriteLine($"RTC = {DateTime.UtcNow.ToString("o")}");
-    Debug.WriteLine($"CPU_T = {M5Core2.Power.GetInternalTemperature().DegreesCelsius}°C");
-    Console.WriteLine($"CPU_T = {M5Core2.Power.GetInternalTemperature().DegreesCelsius}*C");
-    //Debug.WriteLine($"GYRO = {M5Core2.AccelerometerGyroscope.GetGyroscope()}");
-    //Console.WriteLine($"GYRO = {M5Core2.AccelerometerGyroscope.GetGyroscope()}");
-    Console.WriteLine($"HMP-RH = {Hmp155.GetRelativeHumidity().Percent}%");
-    Console.WriteLine($"HMP-Ta = {Hmp155.GetProbeTemperature().DegreesCelsius}*C");
-    //Console.WriteLine($"HMP-Tw = {Hmp155.GetWetBulbTemperature().DegreesCelsius}*C");
-    //Console.WriteLine($"HMP-Tf = {Hmp155.GetFrostPointTemperature().DegreesCelsius}*C");
-    //Console.WriteLine($"HMP-Td = {Hmp155.GetDewPointTemperature().DegreesCelsius}*C");
     Console.WriteLine("");
+
+    if (Menu.CurrentDisplayContext == DisplayContext.SystemConfiguration || Menu.CurrentDisplayContext == DisplayContext.DeviceTelemetry)
+    {
+        Debug.WriteLine($"IP = {System.Net.NetworkInformation.IPGlobalProperties.GetIPAddress()}");
+        Console.WriteLine($"IP = {System.Net.NetworkInformation.IPGlobalProperties.GetIPAddress()}");
+        Debug.WriteLine($"CPU_T = {M5Core2.Power.GetInternalTemperature().DegreesCelsius.ToString("f2")}°C");
+        Console.WriteLine($"CPU_T = {M5Core2.Power.GetInternalTemperature().DegreesCelsius.ToString("f2")}*C");
+        Debug.WriteLine($"GYRO = {M5Core2.AccelerometerGyroscope.GetGyroscope()}"); // TODO: should use gyro to set display orientation
+        //Console.WriteLine($"GYRO = {M5Core2.AccelerometerGyroscope.GetGyroscope()}");
+        Console.WriteLine("");
+    }
+
+    if (Menu.CurrentDisplayContext == DisplayContext.DeviceTelemetry)
+    {
+        Console.WriteLine($"HMP-RH = {Hmp155.GetRelativeHumidity().Percent.ToString("f2")}%");
+        Console.WriteLine($"HMP-Ta = {Hmp155.GetProbeTemperature().DegreesCelsius.ToString("f4")}*C");
+        //Console.WriteLine($"HMP-T = {Hmp110.GetTemperature().DegreesCelsius.ToString("f4")}*C"); // TODO: this sensor does not have a probe
+        // TODO: the following parameters must be read, rather than auto sent:
+        //Console.WriteLine($"HMP-TW = {Hmp155.GetWetBulbTemperature().DegreesCelsius.ToString("f2")}*C");
+        //Console.WriteLine($"HMP-TDF = {Hmp155.GetFrostPointTemperature().DegreesCelsius.ToString("f2")}*C");
+        //Console.WriteLine($"HMP-TD = {Hmp155.GetDewPointTemperature().DegreesCelsius.ToString("f2")}*C");
+        //Console.WriteLine($"HMP-X = {Hmp155.GetMixingRatio().ToString("f2")}.g/kg");
+        Console.WriteLine("");
+    }
+    Console.WriteLine(Menu.FooterText);
 }
