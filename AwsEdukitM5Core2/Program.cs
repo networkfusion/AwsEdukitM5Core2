@@ -17,13 +17,13 @@ using System.IO.Ports;
 using AwsEdukitM5Core2;
 using AwsEdukitM5Core2.VaisalaHmp1xx;
 
+const bool HARDWARE_DEBUG_MODE = false;
 
 M5Core2.InitializeScreen();
 Menu.CurrentDisplayContext = DisplayContext.Startup;
 
 Thread.Sleep(5_000); // Helps with debug!
 Debug.WriteLine("Hello from M5Core2!");
-Console.WriteLine("Hello from M5Core2!");
 Debug.WriteLine($"Waiting for WiFi...{WiFi.Ssid}");
 Console.WriteLine("Waiting for WiFi...");
 Console.WriteLine($"  SSID: \"{WiFi.Ssid}\"");
@@ -53,15 +53,18 @@ Thread.Sleep(5_000); // Helps with debug!
 Console.Clear();
 
 
-var ports = SerialPort.GetPortNames();
-Debug.WriteLine("Available SerialPorts:");
-foreach (var port in ports)
+if (HARDWARE_DEBUG_MODE)
 {
-    Debug.WriteLine(port);
+    Menu.CurrentDisplayContext = DisplayContext.DebugUI;
+    var ports = SerialPort.GetPortNames();
+    Debug.WriteLine("Available SerialPorts:");
+    foreach (var port in ports)
+    {
+        Debug.WriteLine(port);
+    }
 }
 
-Menu.CurrentDisplayContext = DisplayContext.DeviceTelemetry;
-
+Menu.CurrentDisplayContext = DisplayContext.SystemConfiguration;
 // Test the HMP155
 // PORT-C (Blue) - UART (COM2)
 // pins 13 (RXD1 - GPIO3) / 14 (TXD1 - GPIO1)
@@ -71,7 +74,10 @@ M5Core2.TouchEvent += TouchEventCallback;
 
 new Thread(() =>
 {
-    Hmp155.Open();
+    Menu.CurrentDisplayContext = DisplayContext.DeviceInformation;
+    Hmp155.Open(); // This can take a while and also retrives the device info!
+    
+    Menu.CurrentDisplayContext = DisplayContext.DeviceTelemetry;
 
     AddStaticDisplayVariables_MainDisplay();
     for ( ; ; ) // a forever loop
@@ -154,8 +160,9 @@ void TouchEventCallback(object sender, TouchEventArgs e)
 
 void AddStaticDisplayVariables_MainDisplay()
 {
-    Console.WriteLine(Menu.HeaderText);
+    Menu.DrawHeader();
     Console.WriteLine("");
+
     Debug.WriteLine($"RTC = {DateTime.UtcNow}");
     Console.WriteLine($"RTC = {DateTime.UtcNow.ToString("o")}");
     Console.WriteLine("");
@@ -166,7 +173,7 @@ void AddStaticDisplayVariables_MainDisplay()
         Console.WriteLine($"IP = {System.Net.NetworkInformation.IPGlobalProperties.GetIPAddress()}");
         Debug.WriteLine($"CPU_T = {M5Core2.Power.GetInternalTemperature().DegreesCelsius.ToString("f2")}°C");
         Console.WriteLine($"CPU_T = {M5Core2.Power.GetInternalTemperature().DegreesCelsius.ToString("f2")}*C");
-        Debug.WriteLine($"GYRO = {M5Core2.AccelerometerGyroscope.GetGyroscope()}"); // TODO: should use gyro to set display orientation
+        //Debug.WriteLine($"GYRO = {M5Core2.AccelerometerGyroscope.GetGyroscope()}"); // TODO: should use gyro to set display orientation
         //Console.WriteLine($"GYRO = {M5Core2.AccelerometerGyroscope.GetGyroscope()}");
         Console.WriteLine("");
     }
@@ -183,5 +190,6 @@ void AddStaticDisplayVariables_MainDisplay()
         //Console.WriteLine($"HMP-X = {Hmp155.GetMixingRatio().ToString("f2")}.g/kg");
         Console.WriteLine("");
     }
-    Console.WriteLine(Menu.FooterText);
+
+    Menu.DrawFooter();
 }
