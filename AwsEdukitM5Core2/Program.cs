@@ -75,7 +75,7 @@ M5Core2.TouchEvent += TouchEventCallback;
 new Thread(() =>
 {
     Menu.CurrentDisplayContext = DisplayContext.DeviceInformation;
-    Hmp155.Open(); // This can take a while and also retrives the device info!
+    Hmp155.Open(); // This can take a while and also retrives the device info + error status!
     
     Menu.CurrentDisplayContext = DisplayContext.DeviceTelemetry;
 
@@ -127,7 +127,7 @@ void TouchEventCallback(object sender, TouchEventArgs e)
         Console.WriteLine(StrMB);
         Menu.CurrentDisplayContext = DisplayContext.DeviceInformation;
         Console.WriteLine("Get Info!");
-        Hmp155.GetSensorInfo();
+        Hmp155.GetDeviceInformation();
     }
     else if ((e.TouchEventCategory & TouchEventCategory.RightButton) == TouchEventCategory.RightButton)
     {
@@ -135,7 +135,7 @@ void TouchEventCallback(object sender, TouchEventArgs e)
         Debug.WriteLine(StrRB);
         Console.WriteLine(StrRB);
         Console.WriteLine("Measurement start!");
-        Hmp155.MeasurementStart();
+        Hmp155.AutoMeasurementStart();
     }
 
     if ((e.TouchEventCategory & TouchEventCategory.Moving) == TouchEventCategory.Moving)

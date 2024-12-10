@@ -32,6 +32,7 @@ namespace AwsEdukitM5Core2.VaisalaHmp1xx
 
         public int ProbeAddress { get; set; } = 0;
 
+
         // Measurement commands
         public const string CMD_SENSOR_MEASUREMENT_STOP = "S";
         public const string CMD_SENSOR_MEASUREMENT_RUN = "R";
@@ -51,6 +52,20 @@ namespace AwsEdukitM5Core2.VaisalaHmp1xx
 
         // Chemical Purge command
         public const string CMD_SENSOR_CHEMICAL_PURGE = "PUR";
+
+
+        //Errors (retrived using the 'ERRS' command)
+        public const string ERR_T_MEAS = "T MEAS error";
+        public const string ERR_T_REF = "T REF error";
+        public const string ERR_TA_MEAS = "TS MEAS error";
+        public const string ERR_TA_REF = "TA REF error";
+        public const string ERR_F_MEAS = "F MEAS error";
+        public const string ERR_F_REF1 = "F REF1 error";
+        public const string ERR_F_REF3 = "F REF3 error";
+        public const string ERR_CHECKSUM_PROGRAM = "Program flash checksum error";
+        public const string ERR_CHECKSUM_FLASH = "Parameter flash checksum error";
+        public const string ERR_CHECKSUM_INFOA = "INFOA checksum error";
+        public const string ERR_CHECKSUM_SCOEFS = "SCOEFS checksum error";
 
 
         public VaisalaHmp1xx(string port)
@@ -75,11 +90,9 @@ namespace AwsEdukitM5Core2.VaisalaHmp1xx
             _sensor.Open();
             Debug.WriteLine("HMP1xx serial port opened!");
 
-            //Initialize();
-            //Thread.Sleep(5_000);
 
-            DebugHelper.DumpHashTable(GetSensorInfo(), 1);
-            GetSensorErrors();
+            DebugHelper.DumpHashTable(GetDeviceInformation(), 1);
+            GetDeviceErrors();
 
             _sensor.DataReceived += Port_DataReceived;
         }
@@ -93,7 +106,7 @@ namespace AwsEdukitM5Core2.VaisalaHmp1xx
             _sensor.DataReceived -= Port_DataReceived;
         }
 
-        public void MeasurementStop()
+        public void AutoMeasurementStop()
         {
             if (_sensor.IsOpen)
             {
@@ -104,7 +117,7 @@ namespace AwsEdukitM5Core2.VaisalaHmp1xx
             }
         }
 
-        public void MeasurementStart()
+        public void AutoMeasurementStart()
         {
             if (_sensor.IsOpen)
             {
@@ -114,22 +127,22 @@ namespace AwsEdukitM5Core2.VaisalaHmp1xx
         }
 
         /// <summary>
-        /// Retrive the error information from the sensor.
+        /// Retrive the error information from the device.
         /// </summary>
-        public void GetSensorErrors()
+        public void GetDeviceErrors()
         {
-            Debug.WriteLine("Attempting to get sensor error info!");
+            Debug.WriteLine("Attempting to get device error info!");
             try
             {
-                MeasurementStop();
+                AutoMeasurementStop();
 
                 _sensor.WriteLine(CMD_SENSOR_SYS_ERRORS); // Get the device info
-                Thread.Sleep(1000); // allow enough time for the info to be returned
+                Thread.Sleep(3000); // allow enough time for the info to be returned
                 while (_sensor.BytesToRead > 0)
                 {
                     Debug.WriteLine(_sensor.ReadLine()); // Get the returned device info strings
                 }
-                Thread.Sleep(1000); // allow enough time after.
+                Thread.Sleep(500); // allow enough time after.
 
             }
             catch (Exception ex)
@@ -138,15 +151,15 @@ namespace AwsEdukitM5Core2.VaisalaHmp1xx
                 Debug.WriteLine($"Failed to get sensor info: {ex.Message}");
             }
 
-            MeasurementStart();
+            AutoMeasurementStart();
         }
 
         /// <summary>
-        /// Retrive the sensor information.
+        /// Retrive the device information.
         /// </summary>
-        public Hashtable GetSensorInfo()
+        public Hashtable GetDeviceInformation()
         {
-            MeasurementStop();
+            AutoMeasurementStop();
             //Thread.Sleep(3000); // allow enough time for the measurements to be stopped
             //while (_sensor.BytesToRead > 0) // FIXME: we just want to ensure the read buffer is empty.
             //{
@@ -154,7 +167,7 @@ namespace AwsEdukitM5Core2.VaisalaHmp1xx
             //    Debug.WriteLine($"Debug read: {dbg}");
             //}
 
-            Hashtable infoFields = new(); // TODO : use SensorInfo class
+            Hashtable infoFields = new(); // TODO : use DeviceInformation class
             Debug.WriteLine("Attempting to get sensor info!");
             try
             {
@@ -204,11 +217,26 @@ namespace AwsEdukitM5Core2.VaisalaHmp1xx
                         var field = line.Split(':');
                         if (field.Length == 2)
                         {
-                            infoFields.Add(field[0].Trim(), field[1].Trim());
+                            string fieldKey = field[0].Trim();
+                            if (fieldKey.Contains(" ")) //hack to remove space. Ideally it would captialize the second field.
+                            {
+                                var split_field = fieldKey.Split(' ');
+                                fieldKey = $"{split_field[0]}{split_field[1]}";
+                                if (split_field.Length > 2) // specifically handle Baud P D S
+                                {
+                                    fieldKey += fieldKey = $"{split_field[2]}{split_field[3]}";
+                                }
+                            }
+                            if (fieldKey.Contains(".")) //hack to remove '.' and improve text for 'cal.' entries. Ideally it would captialize the second field.
+                            {
+                                var split_field = fieldKey.Split('.');
+                                fieldKey = $"{split_field[0]}ibration{split_field[1]}";
+                            }
+                            infoFields.Add(fieldKey, field[1].Trim());
                         }
                     }
                 }
-                Thread.Sleep(3000); // allow enough time after.
+                Thread.Sleep(100); // allow enough time after (sdelay is default 10ms).
 
             }
             catch (Exception ex)
@@ -217,7 +245,7 @@ namespace AwsEdukitM5Core2.VaisalaHmp1xx
                 Debug.WriteLine($"Failed to get sensor info: {ex.Message}");
             }
 
-            MeasurementStart();
+            AutoMeasurementStart();
             return infoFields;
         }
 
@@ -228,7 +256,7 @@ namespace AwsEdukitM5Core2.VaisalaHmp1xx
         {
             // TODO: support poll mode?
 
-            MeasurementStop();
+            AutoMeasurementStop();
             ////sensor.WriteLine("open 0"); // 0 would be the RS485 address....
             //sensor.WriteLine("intv 15 s");
             //Debug.WriteLine(sensor.ReadLine());
@@ -362,13 +390,13 @@ namespace AwsEdukitM5Core2.VaisalaHmp1xx
             //// writeline "FORM /" // put it back to the default message format
             //_sensor.WriteLine(CMD_SENSOR_FORMATTING_FORMAT + " /");
             //// writeline "R"
-            MeasurementStart();
+            AutoMeasurementStart();
             return Temperature.FromDegreesCelsius(_wetbulbTemperature);
         }
 
 
 
-        private static void DecodeMessage(string message)
+        private static void DecodeAutoMessage(string message)
         {
             //TODO: better handle message formats as defined with sending the `FORM`. For the HMP110, it will likely use 'T' rather than 'Ta'
             //Debug.WriteLine(message);
@@ -398,7 +426,7 @@ namespace AwsEdukitM5Core2.VaisalaHmp1xx
             SerialPort serialDevice = (SerialPort)sender;
             if (!expectingCommandResponse)
             {
-                DecodeMessage(serialDevice.ReadLine().TrimEnd(new char[] { '\r', '\n' }));
+                DecodeAutoMessage(serialDevice.ReadLine().TrimEnd(new char[] { '\r', '\n' }));
             }
         }
 

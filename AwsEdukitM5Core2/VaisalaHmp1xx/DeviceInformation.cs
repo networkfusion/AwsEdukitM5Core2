@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 
 namespace AwsEdukitM5Core2.VaisalaHmp1xx
 {
@@ -38,5 +39,15 @@ namespace AwsEdukitM5Core2.VaisalaHmp1xx
         public string PressureInBar { get; set; } = string.Empty;
         // Filter         :    1.000
         public string Filter { get; set; } = string.Empty;
+
+
+        //public void TryPopulate(Hashtable deviceInfo)
+        //{
+        //    foreach (var key in deviceInfo.Keys)
+        //    {
+        //        if (key)
+        //    }
+
+        //}
     }
 }
