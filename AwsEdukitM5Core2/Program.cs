@@ -18,38 +18,42 @@ using AwsEdukitM5Core2;
 using AwsEdukitM5Core2.VaisalaHmp1xx;
 
 const bool HARDWARE_DEBUG_MODE = false;
+const bool USE_NETWORKING = false;
 
 M5Core2.InitializeScreen();
 Menu.CurrentDisplayContext = DisplayContext.Startup;
 
 Thread.Sleep(5_000); // Helps with debug!
 Debug.WriteLine("Hello from M5Core2!");
-Debug.WriteLine($"Waiting for WiFi...{WiFi.Ssid}");
-Console.WriteLine("Waiting for WiFi...");
-Console.WriteLine($"  SSID: \"{WiFi.Ssid}\"");
-// Give 30 seconds to the wifi connection to happen
-CancellationTokenSource cs = new(30_000);
-var success = false;
-while (!success)
+if (USE_NETWORKING)
 {
-    success = WifiNetworkHelper.ConnectDhcp(WiFi.Ssid, WiFi.Password, requiresDateTime: true, token: cs.Token);
-
-    if (!success)
+    Debug.WriteLine($"Waiting for WiFi...{WiFi.Ssid}");
+    Console.WriteLine("Waiting for WiFi...");
+    Console.WriteLine($"  SSID: \"{WiFi.Ssid}\"");
+    // Give 30 seconds to the wifi connection to happen
+    CancellationTokenSource cs = new(30_000);
+    var success = false;
+    while (!success)
     {
-        // Something went wrong, you can get details with the ConnectionError property:
-        Debug.WriteLine($"Can't connect to the network, error: {WifiNetworkHelper.Status}");
-        Console.WriteLine($"Can't connect to the network, error: {WifiNetworkHelper.Status}");
-        if (WifiNetworkHelper.HelperException != null)
+        success = WifiNetworkHelper.ConnectDhcp(WiFi.Ssid, WiFi.Password, requiresDateTime: true, token: cs.Token);
+
+        if (!success)
         {
-            Debug.WriteLine($"ex: {WifiNetworkHelper.HelperException}");
-            Console.WriteLine($"ex: {WifiNetworkHelper.HelperException}");
+            // Something went wrong, you can get details with the ConnectionError property:
+            Debug.WriteLine($"Can't connect to the network, error: {WifiNetworkHelper.Status}");
+            Console.WriteLine($"Can't connect to the network, error: {WifiNetworkHelper.Status}");
+            if (WifiNetworkHelper.HelperException != null)
+            {
+                Debug.WriteLine($"ex: {WifiNetworkHelper.HelperException}");
+                Console.WriteLine($"ex: {WifiNetworkHelper.HelperException}");
+            }
         }
     }
-}
 
-Debug.WriteLine("Network Setup complete.");
-Console.WriteLine("Network Setup complete.");
-Thread.Sleep(5_000); // Helps with debug!
+    Debug.WriteLine("Network Setup complete.");
+    Console.WriteLine("Network Setup complete.");
+    Thread.Sleep(5_000); // Helps with debug!
+}
 Console.Clear();
 
 
@@ -169,8 +173,11 @@ void AddStaticDisplayVariables_MainDisplay()
 
     if (Menu.CurrentDisplayContext == DisplayContext.SystemConfiguration || Menu.CurrentDisplayContext == DisplayContext.DeviceTelemetry)
     {
-        Debug.WriteLine($"IP = {System.Net.NetworkInformation.IPGlobalProperties.GetIPAddress()}");
-        Console.WriteLine($"IP = {System.Net.NetworkInformation.IPGlobalProperties.GetIPAddress()}");
+        if (USE_NETWORKING)
+        {
+            Debug.WriteLine($"IP = {System.Net.NetworkInformation.IPGlobalProperties.GetIPAddress()}");
+            Console.WriteLine($"IP = {System.Net.NetworkInformation.IPGlobalProperties.GetIPAddress()}");
+        }
         Debug.WriteLine($"CPU_T = {M5Core2.Power.GetInternalTemperature().DegreesCelsius.ToString("f2")}°C");
         Console.WriteLine($"CPU_T = {M5Core2.Power.GetInternalTemperature().DegreesCelsius.ToString("f2")}*C");
         //Debug.WriteLine($"GYRO = {M5Core2.AccelerometerGyroscope.GetGyroscope()}"); // TODO: should use gyro to set display orientation
