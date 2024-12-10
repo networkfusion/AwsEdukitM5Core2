@@ -8,6 +8,28 @@ using UnitsNet;
 
 namespace AwsEdukitM5Core2.VaisalaHmp1xx
 {
+    enum SerialMode
+    {
+        Stop,
+        Run,
+        Poll,
+        Send
+    }
+
+    enum AutoTelemetryFormat
+    {
+        None = 0, // used in poll mode
+        Default,
+        Laske6,
+        Laske7,
+        Custom, // when form is not the default expected.
+    }
+
+    enum Units
+    {
+        Metric,
+        Imperial
+    }
 
     /// <summary>
     ///  Base class for common functions of the Vaisala HMP1xx sensors.
@@ -26,8 +48,12 @@ namespace AwsEdukitM5Core2.VaisalaHmp1xx
         private static readonly double _mixingRatio;
         private static readonly double _wetbulbTemperature;
 
-        // The following format was the default one I retrived from my sensor. I am not sure if it is the actual default!
-        //private const string defaultTelemtryFormat = "3.1 \"RH=\" RH \" \" U4 3.1 \"Ta=\" Ta \" \" U3 \\r \\n";
+        // The following formatting was the default one I retrived from my sensor. I am not sure if it is the actual default!
+        //private const string defaultAutoTelemtryFormat = "3.1 \"RH=\" RH \" \" U4 3.1 \"Ta=\" Ta \" \" U3 \\r \\n";
+        //private const string laske6AutoTelemetryFormat = "\\001 \"HMP155,\" ADDR \\002 3.2 RH \",\" T \",\" U2 \",\" Td \",\" Tdf \",\" Tw \",\" x \",\" STAT \",\" ERR \\003 CS4 \\r \\n";
+        // We should really use the Laske7 format as most complete. On startup we should check this is enabled!
+        //private const string laske7AutoTelemetryFormat = "\\001 \"HMP155,\" ADDR \\002 3.2 RH \",\" Ta \",\" U2 \",\" Td \",\" Tdf \",\" Tw \",\" x \",\" STAT \",\" ERR \\003 CS4 \\r \\n";
+
         private static bool expectingCommandResponse = false;
 
         public int ProbeAddress { get; set; } = 0;
@@ -49,6 +75,9 @@ namespace AwsEdukitM5Core2.VaisalaHmp1xx
         public const string CMD_SENSOR_SYS_VERSION = "VERS";
         public const string CMD_SENSOR_SYS_HELP = "HELP";
         public const string CMD_SENSOR_SYS_FILTERMODE = "FILT";
+        public const string CMD_SENSOR_SYS_XHEAT = "XHEAT";
+        public const string CMD_SENSOR_SYS_TIME = "TIME";
+
 
         // Chemical Purge command
         public const string CMD_SENSOR_CHEMICAL_PURGE = "PUR";
@@ -66,6 +95,15 @@ namespace AwsEdukitM5Core2.VaisalaHmp1xx
         public const string ERR_CHECKSUM_FLASH = "Parameter flash checksum error";
         public const string ERR_CHECKSUM_INFOA = "INFOA checksum error";
         public const string ERR_CHECKSUM_SCOEFS = "SCOEFS checksum error";
+
+        // HMP60 and HMP110 specific 
+        //public const string ERR_RH_SENSE = "RH sensor failure";
+        //public const string ERR_FREQ = "Frequency measurement outside the permissible value range";
+        //public const string ERR_AT = "Ambient temperature error";
+        //public const string ERR_CHECKSUM_CURRENT = "CURRENT check sum error";
+        //public const string ERR_VOLTAGE = "Voltage error";
+        //public const string ERR_GENERAL_FLASH = "General flash failure w/r";
+        //public const string ERR_CHECKSUM_CAL = "Calibration certificate check sum failure";
 
 
         public VaisalaHmp1xx(string port)
@@ -148,7 +186,7 @@ namespace AwsEdukitM5Core2.VaisalaHmp1xx
             catch (Exception ex)
             {
 
-                Debug.WriteLine($"Failed to get sensor info: {ex.Message}");
+                Debug.WriteLine($"Failed to get device error info: {ex.Message}");
             }
 
             AutoMeasurementStart();
@@ -396,28 +434,59 @@ namespace AwsEdukitM5Core2.VaisalaHmp1xx
 
 
 
-        private static void DecodeAutoMessage(string message)
+        private static void DecodeAutoMessage(string message, AutoTelemetryFormat expectedMessageFormmatting = AutoTelemetryFormat.Default)
         {
             //TODO: better handle message formats as defined with sending the `FORM`. For the HMP110, it will likely use 'T' rather than 'Ta'
             //Debug.WriteLine(message);
 
-            if (message.StartsWith("RH=") && message.Contains("%RH Ta=") && message.TrimEnd(' ').EndsWith("'C"))
+            if (expectedMessageFormmatting == AutoTelemetryFormat.Default)
             {
-                // starts with "RH=" and ends with "%RH", strip those chars, then convert to a double?!
-                var humidity = message.Substring(3, 6).Trim(' '); // Temporary "workaround?!
-                // starts with "Ta=" and ends with "'C", strip those chars, then convert to a double?!
-                var probeTemperature = message.Substring(16, 6).Trim(' '); // Temporary "workaround?!
-                //Debug.WriteLine($"RH:{humidity}, T:{temperature}");
-                try
+                if (message.StartsWith("RH=") && message.Contains("%RH Ta=") && message.TrimEnd(' ').EndsWith("'C"))
                 {
-                    _humidity = double.Parse(humidity);
-                    _probeTemperature = double.Parse(probeTemperature);
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine($"unable to convert values for HMP1xx: {ex}");
-                }
+                    // starts with "RH=" and ends with "%RH", strip those chars, then convert to a double?!
+                    var humidity = message.Substring(3, 6).Trim(' '); // Temporary "workaround?!
+                                                                      // starts with "Ta=" and ends with "'C", strip those chars, then convert to a double?!
+                    var probeTemperature = message.Substring(16, 6).Trim(' '); // Temporary "workaround?!
+                                                                               //Debug.WriteLine($"RH:{humidity}, T:{temperature}");
+                    try
+                    {
+                        _humidity = double.Parse(humidity);
+                        _probeTemperature = double.Parse(probeTemperature);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"unable to convert values for HMP1xx: {expectedMessageFormmatting} {ex}");
+                    }
 
+                }
+            }
+            else if (expectedMessageFormmatting == AutoTelemetryFormat.Laske7)
+            {
+                // "\\001 \"HMP155,\" ADDR \\002 3.2 RH \",\" Ta \",\" U2 \",\" Td \",\" Tdf \",\" Tw \",\" x \",\" STAT \",\" ERR \\003 CS4 \\r \\n";
+                // SOH
+                // HMP155,
+                // ADDR
+                // SOT
+                // 3.2 RH,
+                // Ta,
+                // U2,
+                // Td,
+                // Tdf,
+                // Tw,
+                // x,
+                // STAT,
+                // ERR
+                // ETX
+                // CS4
+
+                // if the message starts with char SOH, contains STX, and contains ETX (then a checksum)
+                // check the validity of the checksum (Modulus-65536 checksum of message sent so far, hexadecimal format.)
+                // split message by commas between STX and ETX (decode message body)
+                //var telemetry = new DeviceTelemetry(message, AutoTelemetryFormat.Laske7);
+            }
+            else
+            {
+                Debug.WriteLine("Not handled yet!");
             }
         }
 

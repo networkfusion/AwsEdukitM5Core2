@@ -22,6 +22,7 @@
     <Compile Include="DebugHelper.cs" />
     <Compile Include="Menu.cs" />
     <Compile Include="VaisalaHmp1xx\DeviceInformation.cs" />
+    <Compile Include="VaisalaHmp1xx\DeviceTelemetry.cs" />
     <Compile Include="VaisalaHmp1xx\VaisalaHmp1xx.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
