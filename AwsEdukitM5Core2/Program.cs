@@ -1,9 +1,9 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-// Latest known working interpreter = `1.12.1.33`
+// Latest known working interpreter = `1.12.1.61`
 // Perform updates using:
-// nanoff --target M5Core2 --update --serialport COM7 --masserase --fwversion 1.12.1.33
+// nanoff --target M5Core2 --update --serialport COM7 --masserase --fwversion 1.12.1.61
 
 using nanoFramework.M5Core2;
 using nanoFramework.M5Stack;
@@ -18,7 +18,7 @@ using AwsEdukitM5Core2;
 using AwsEdukitM5Core2.VaisalaHmp1xx;
 
 const bool HARDWARE_DEBUG_MODE = false;
-const bool USE_NETWORKING = false;
+const bool USE_NETWORKING = false; // After a firmware update, we need to set this to true, otherwise we will not have a good(ish) RTC datetime.
 
 M5Core2.InitializeScreen();
 Menu.CurrentDisplayContext = DisplayContext.Startup;
